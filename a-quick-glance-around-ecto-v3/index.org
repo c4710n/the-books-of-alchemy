@@ -25,7 +25,7 @@ Hope you guys like it!
 
   This book will act as a map of large numbers of docs, and guide you to glance over the main features of Ecto v3 by trying to construct the database layer of a blogging system.
 
-  If you want to have a deep insight of Ecto or more complicated use case, you can read more in [[https://hexdocs.pm/ecto/][Ecto's Docs]], [[https://pragprog.com/book/wmecto/programming-ecto][Programming Ecto]] or [[https://dashbit.co/ebooks/the-little-ecto-cookbook][The Little Ecto Cookbook]].
+  If you want to have a deep insight of Ecto or more complicated use cases, you can read more in [[https://hexdocs.pm/ecto/][Ecto's Docs]], [[https://pragprog.com/book/wmecto/programming-ecto][Programming Ecto]] or [[https://dashbit.co/ebooks/the-little-ecto-cookbook][The Little Ecto Cookbook]].
 
   #+begin_question
   Why do you take a blogging system as the example?
@@ -43,7 +43,7 @@ Hope you guys like it!
    In order to help people as much as possible, I am trying to write this book in 7th-grade plain English.
 
    #+begin_quote
-   English isn't my mother language. When you find any error, it would be nice if you can [[mailto:c4710n@pm.me][email me]] or create an issue.
+   English isn't my mother language. When you find any error, it would be nice if you can [[mailto:c4710n@pm.me][email me]] or [[https://github.com/c4710n/the-books-of-alchemy/issues][create an issue]].
    #+end_quote
 
 ** Notation of shell commands
