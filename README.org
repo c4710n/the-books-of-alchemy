@@ -1,1 +1,5 @@
 #+TITLE: the-books-of-alchemy
+
+#+begin_quote
+The books about Elixir and OTP.
+#+end_quote
