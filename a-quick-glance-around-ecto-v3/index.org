@@ -23,15 +23,15 @@ Hope you guys like it!
 * Introduction
   Ecto is the most popular persistence framework in Elixir Community.
 
-  In this book, we will glance over the main features of Ecto v3 by trying to construct the database layer of a blogging system.
+  This book will act as a map of large numbers of docs, and guide you to glance over the main features of Ecto v3 by trying to construct the database layer of a blogging system.
+
+  If you want to have a deep insight of Ecto or more complicated use case, you can read more in [[https://hexdocs.pm/ecto/][Ecto's Docs]], [[https://pragprog.com/book/wmecto/programming-ecto][Programming Ecto]] or [[https://dashbit.co/ebooks/the-little-ecto-cookbook][The Little Ecto Cookbook]].
 
   #+begin_question
   Why do you take a blogging system as the example?
 
   A blogging system is the system that everybody knows. Readers don't have to spend time to learn domain-specific things.
   #+end_question
-
-  If you want to have a deep insight of Ecto or more complicated use case, you can read more in [[https://hexdocs.pm/ecto/][Ecto's Docs]] or [[https://pragprog.com/book/wmecto/programming-ecto][Programming Ecto]].
 
 * Prerequisites
   Before reading this book, you should know how to write basic Elixir. That's all.
