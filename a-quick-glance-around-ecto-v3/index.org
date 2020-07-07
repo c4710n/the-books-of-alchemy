@@ -1,0 +1,1943 @@
+#+SETUPFILE: ../org-setup/export-html.org
+#+TITLE: A Quick Glance Around Ecto v3
+#+AUTHOR: c4710n
+#+DESCRIPTION: Learn Ecto v3 in a fast way.
+#+KEYWORDS: Elixir, Erlang, Ecto, Phoenix, Tutorial, Book
+#+FLYSPELL: t
+
+In order to help more people in Elixir community, I organize my personal notes, and publish them as a free online book.
+
+Hope you guys like it!
+
+* export settings                                                  :noexport:
+  #+NAME: html-head-extra
+  #+begin_src html
+  <header class="header">
+    <div class="logo-wrapper">
+      <span class="logo">ECTO</span>
+    </div>
+    <button class="toc-trigger">TOC</button>
+  </header>
+  #+end_src
+
+* Introduction
+  Ecto is the most popular persistence framework in Elixir Community.
+
+  In this book, we will glance over the main features of Ecto v3 by trying to construct the database layer of a blogging system.
+
+  #+begin_question
+  Why do you take a blogging system as the example?
+
+  A blogging system is the system that everybody knows. Readers don't have to spend time to learn domain-specific things.
+  #+end_question
+
+  If you want to have a deep insight of Ecto or more complicated use case, you can read more in [[https://hexdocs.pm/ecto/][Ecto's Docs]] or [[https://pragprog.com/book/wmecto/programming-ecto][Programming Ecto]].
+
+* Prerequisites
+  Before reading this book, you should know how to write basic Elixir. That's all.
+
+* The Conventions
+  Conventions reduce the effort needed to read and understand.
+
+** Plain English
+   In order to help people as much as possible, I am trying to write this book in 7th-grade plain English.
+
+   #+begin_quote
+   English isn't my mother language. When you find any error, it would be nice if you can [[mailto:c4710n@pm.me][email me]] or create an issue.
+   #+end_quote
+
+** Notation of shell commands
+   The shell commands is prefixed by =$= which is the default prompt for ordinary UNIX users.
+
+   For example:
+   #+begin_src sh
+   $ ls -al ~
+   #+end_src
+
+** Reading official documents
+   When something has been explained in official documents, it won't be described again. I will guide you to read the related documents.
+
+   For example, when you see something like /please read =h Ecto.Schema=/, it means:
+   + read docs in a terminal by typing =h Ecto.Schema= in IEx.
+   + read docs in a web browser by visiting [[https://hexdocs.pm/ecto/Ecto.Schema.html][Ecto.Schema]].
+
+* Setup Environments
+  Before moving on, we should ensure that fundamental environments are configured:
+  + Elixir 1.10+ is installed
+  + PostgreSQL is installed
+
+  There are lots of online tutorials about setting up environments, we won't describe them again.
+
+* Sample Application
+  Ecto is an Elixir library, it should be used in an Elixir project. Therefore, we should create a project before playing with Ecto.
+
+** Creating a mix project
+   Create a project called =paper=:
+   #+begin_src sh
+   $ mix new paper --sup
+   #+end_src
+
+   The =--sup= option is required. It ensures that the generated application has a supervision tree, which is required by Ecto.
+
+   #+begin_note
+   It's OK to run =mix new= without =--sup= option. But, you need to do more works later.
+   #+end_note
+
+** Adding dependencies
+   Two packages are required:
+   + =ecto_sql=
+   + =postgrex= - database driver for PostgreSQL
+
+   Edit =mix.exs=:
+   #+begin_src elixir
+   defp deps do
+     [
+       {:ecto_sql, "~> 3.0"},
+       {:postgrex, ">= 0.0.0"}
+     ]
+   end
+   #+end_src
+
+   Fetch dependencies:
+   #+begin_src sh
+   $ mix deps.get
+   #+end_src
+
+** Creating a Repo
+   #+begin_quote
+   You may be wondering what a Repo is. Now, just think it as a normal Elixir module. We will explain it later.
+   #+end_quote
+
+   Edit =lib/paper/repo.ex=:
+   #+begin_src elixir
+   defmodule Paper.Repo do
+     use Ecto.Repo,
+       otp_app: :paper,
+       adapter: Ecto.Adapters.Postgres
+   end
+   #+end_src
+
+   About the options:
+   + =:otp_app= option indicates the location of Ecto configuration.
+   + =:adapter= option indicates the database adapter.
+
+   #+begin_note
+   You can name =Paper.Repo= as whatever you want, but =Repo= is prefered in convention.
+   #+end_note
+
+** Adding Repo to supervision tree
+   Edit =lib/paper/application.ex=:
+   #+begin_src elixir
+   defmodule Paper.Application do
+     # See https://hexdocs.pm/elixir/Application.html
+     # for more information on OTP Applications
+     @moduledoc false
+
+     use Application
+
+     def start(_type, _args) do
+       children = [
+         # add repo to supervision tree
+         {Paper.Repo, []}
+       ]
+
+       # See https://hexdocs.pm/elixir/Supervisor.html
+       # for other strategies and supported options
+       opts = [strategy: :one_for_one, name: Paper.Supervisor]
+       Supervisor.start_link(children, opts)
+     end
+   end
+   #+end_src
+
+** Adding configurations
+   Edit =config/config.exs=:
+   #+begin_src elixir
+   import Config
+
+   # make Ecto related Mix tasks work as expected.
+   config :paper,
+     ecto_repos: [Paper.Repo]
+
+   # add configurations for connecting database.
+   config :paper, Paper.Repo,
+     database: "paper_repo",
+     username: "postgres",
+     password: "postgres",
+     hostname: "localhost"
+   #+end_src
+
+   #+begin_note
+   Make sure the username and password specified in config file match yours.
+   #+end_note
+
+** Creating database
+   #+begin_src sh
+   $ mix ecto.create
+   The database for Paper.Repo has been created
+   #+end_src
+
+** (optional) Updating configurations for =mix format=
+   Ecto has additional formatting rules. In order to apply these rules, following content should be added.
+
+   Edit =.formatter.exs= for formatting general Elixir code:
+   #+begin_src elixir
+   # Used by "mix format"
+   [
+     import_deps: [:ecto],
+     inputs: ["*.{ex,exs}", "{config,lib,test}/**/*.{ex,exs}", "priv/*/seeds.exs"],
+     subdirectories: ["priv/*/migrations"]
+   ]
+   #+end_src
+
+   Edit =priv/repo/migrations/.formatter.exs= for formatting migrations:
+   #+begin_src elixir
+   [
+     import_deps: [:ecto_sql],
+     inputs: ["*.exs"]
+   ]
+   #+end_src
+
+** Last
+   Now, Ecto is ready to communicate with the database.
+
+* Sample Data Model
+  :PROPERTIES:
+  :CUSTOM_ID: sample-data-model
+  :END:
+
+  Before writing any code, we should design a data model first.
+
+  Our data model contains 5 tables:
+  + authors
+  + posts
+  + tags
+  + permalinks
+  + comments
+
+  Their relationships are described in following figure:
+  #+caption: Entity Relationship Diagram
+  [[file:./assets/4ba08274293d7631377890af10bf767a.png]]
+
+  #+begin_note
+  The one-to-one relationship between posts and permalinks isn't necessary for most case, it's preserved for demonstration only.
+  #+end_note
+
+* The Structure Of Ecto
+  #+begin_quote
+  Ecto's real purpose is translating Elixir concepts into a database language, which is SQL in most cases.
+
+  -- Programming Phoenix
+  #+end_quote
+
+  Before talking about Ecto in details, we will introduce the structure of Ecto first. It let us have an overview of Ecto.
+
+  Ecto includes 6 main modules which are separated in 2 packages:
+
+  =ecto= package - contains the core functionalities:
+  + =Repo= handles all the communications between Ecto and data store.
+  + =Query= provides DSL for querying.
+  + =Schema= provides DSL for mapping data source to Elixir structs.
+  + =Changeset= provides functions for handling changes.
+  + =Multi= controls transactions in a clean way.
+
+  =ecto_sql= package - provides SQL-based adapters and database migrations:
+  + database-specified adapters, such as PostgreSQL, MySQL.
+  + =Migration= provides DSL for tracking database changes in a clean way.
+
+  #+begin_question
+  Why we just add =ecto_sql= when adding dependencies?
+
+  Because =ecto= is the dependency of =ecto_sql=, it's OK to add =ecto_sql= alone.
+  #+end_question
+
+  #+begin_note
+  When talking about =Schema=, we are not saying database, but data source. That is because =Schema= can be used to map any data source to Elixir structs, not just database tables.
+  #+end_note
+
+  We have already known the structure of Ecto. Next, we will introduce them separately.
+
+* =Ecto.Migration=
+  =Ecto.Migration= helps developers to track database changes in a clean way.
+
+** What is a migration?
+   A migration is a file includes a set of instructions which changes database structure.
+
+** Generating template for migrations
+   The default directory for storing migrations is =priv/repo/migrations=. We can create migration file in that directory manually.
+
+   But,  Ecto provides a Mix task for generating a migration, let's use it:
+   #+begin_src sh
+   $ mix ecto.gen.migration <migration name>
+   #+end_src
+
+   After executing above command, a new migration file containing a module with empty =change= function will be generated.
+
+** Creating migrations
+   :PROPERTIES:
+   :CUSTOM_ID: creating-migrations
+   :END:
+
+   In relational database, there are 3 types of relationships:
+   + on-to-one (1-1)
+   + one-to-many (1-N)
+   + many-to-many (N-N)
+
+   As we saw in [[#sample-data-model][Sample Data Model]], we have four relationships, and they cover all types of relationships:
+   + the relationship between posts and permalinks is one-to-one.
+   + the relationship between posts and comments is one-to-many.
+   + the relationship between posts and tags is many-to-many.
+   + the relationship between authors and posts is one-to-many.
+
+   Next, we will take the sample data model as an example, and demonstrate how to create migrations for all of these relationships.
+
+   #+begin_note
+   When creating a migration, we generally define following things:
+   1. table names
+   2. columns
+   3. relationships
+   4. indexes
+   #+end_note
+
+*** build relationship between posts and permalinks (1-1)
+    As we said above:
+    + one post has one permalink.
+    + one permalink belongs to one post.
+
+    Generate a migration file:
+    #+begin_src sh
+    $ mix ecto.gen.migration assoc_posts_permalinks
+    #+end_src
+
+    Edit the generated migration file:
+    #+begin_src elixir
+    defmodule Paper.Repo.Migrations.AssocPostsPermalinks do
+      use Ecto.Migration
+
+      def change do
+        create table("posts") do
+          add :title, :string, null: false
+          add :body, :text, null: false
+
+          timestamps()
+        end
+
+        create table("permalinks") do
+          add :post_id, references("posts"), null: false
+          add :url, :string, null: false
+
+          timestamps()
+        end
+
+        create unique_index("permalinks", [:post_id])
+        create unique_index("permalinks", [:url])
+      end
+    end
+    #+end_src
+
+    Apply the new migration:
+    #+begin_src sh
+    $ mix ecto.migrate
+    #+end_src
+
+*** build relationship between posts and comments (1-N)
+    As we said above:
+    + one post has many comments.
+    + one comment belongs to one post.
+
+    Generate a migration file:
+    #+begin_src sh
+    $ mix ecto.gen.migration assoc_posts_comments
+    #+end_src
+
+    Edit the generated migration file:
+    #+begin_src elixir
+    defmodule Paper.Repo.Migrations.AssocPostsComments do
+      use Ecto.Migration
+
+      def change do
+        create table("comments") do
+          add :post_id, references("posts"), null: false
+          add :nickname, :string, null: false
+          add :email, :string, null: false
+          add :body, :text, null: false
+
+          timestamps()
+        end
+      end
+    end
+    #+end_src
+
+    Apply the new migration:
+    #+begin_src sh
+    $ mix ecto.migrate
+    #+end_src
+
+*** build relationship between posts and tags (N-N)
+    As we said above:
+    + one post has many tags.
+    + one tag has many posts.
+
+    Generate a migration file:
+    #+begin_src sh
+    $ mix ecto.gen.migration assoc_posts_tags
+    #+end_src
+
+    Edit the generated migration file:
+    #+begin_src elixir
+    defmodule Paper.Repo.Migrations.AssocPostsTags do
+      use Ecto.Migration
+
+      def change do
+        create table("posts") do
+        end
+
+        create table("tags") do
+        end
+
+        create table("posts_tags", primary_key: false) do
+          add :post_id, references("posts"), null: false
+          add :tag_id, references("tags"), null: false
+        end
+
+        create unique_index("posts_tags", [:post_id, :tag_id])
+        create index("posts_tags", [:post_id])
+        create index("posts_tags", [:tag_id])
+      end
+    end
+    #+end_src
+
+    Apply the new migration:
+    #+begin_src sh
+    $ mix ecto.migrate
+    #+end_src
+
+*** build relation ship between authors and posts (1-N)
+    As we said above:
+    + one author has many posts.
+    + one post belongs to one author.
+
+    Generate a migration file:
+    #+begin_src sh
+    $ mix ecto.gen.migration assoc_authors_posts
+    #+end_src
+
+    Edit the generated migration file:
+    #+begin_src elixir
+    defmodule Paper.Repo.Migrations.AssocAuthorsPosts do
+      use Ecto.Migration
+
+      def change do
+        create table("authors") do
+          add :name, :string, null: false
+          add :bio, :string, null: false
+
+          timestamps()
+        end
+
+        alter table("posts") do
+          add :author_id, references("authors"), null: false
+        end
+
+        create unique_index("authors", [:name])
+      end
+    end
+    #+end_src
+
+    Apply the new migration:
+    #+begin_src sh
+    $ mix ecto.migrate
+    #+end_src
+
+** Applying migrations
+   We have introduced how to apply migration in above section. Read more details at:
+   #+begin_src sh
+   $ mix help ecto.migrate
+   #+end_src
+
+** Rolling back migrations
+   #+begin_src sh
+   $ mix ecto.rollback
+   #+end_src
+
+   Read more details at:
+   #+begin_src sh
+   $ mix help ecto.rollback
+   #+end_src
+
+** Available column types
+   When [[#creating-migrations][creating migrations]], we have specified some column types, such as =:string= or =:text=.
+
+   =text= is a valid SQL data type, but =string= not. So, what is that?
+
+   Ecto maps primitive types to the appropriate database column types by the database adapters. Such as:
+   + map =:string= to =:varchar=
+   + map =:binary= to =:bytea= or =:blob=.
+   + ...
+
+   #+begin_note
+   Ecto defines the mapping at =ecto_sql= package. For PostgreSQL, the details can be found [[https://github.com/elixir-ecto/ecto_sql/blob/eda193965ef112cd0e8f584c58a2efa751655a3e/lib/ecto/adapters/postgres/connection.ex#L1181][here]].
+   #+end_note
+
+   Besides, column types supported by database can be used directly in migration. Such as:
+   + ~:char~
+   + ~:varchar~
+   + ~:text~
+   + ...
+
+   And, column types with database-specific options can be used, too. Such as:
+   + ~:"int unsigned"~
+   + ~:"time without time zone"~
+   + ...
+
+** Adding index
+   Read more details at =h Ecto.Migration.index=.
+
+** The options of =references=
+   :PROPERTIES:
+   :CUSTOM_ID: the-options-of-references
+   :END:
+
+   =Ecto.Migration.references= have two options which should be explained here - =:on_delete= and =:on_update=.
+
+   The official docs don't talk much about them. But, we can know the details by reading [[https://github.com/elixir-ecto/ecto_sql/blob/2ec71d74655cc076b6c965740a357dfe1505883a/lib/ecto/adapters/postgres/connection.ex#L1043][related source code]] and [[https://www.postgresql.org/docs/12/ddl-constraints.html#DDL-CONSTRAINTS-FK][corresponding docs of PostgreSQL]].
+
+*** the =:on_delete= option
+    The =:on_delete= option specifies the behavior of referencing rows when a referenced row is deleted. Following is the available values.
+
+    - =:delete_all= ::
+      + PostgreSQL clause: =ON DELETE CASCADE=
+      + description: The referencing rows will be deleted.
+
+    - =:nilify_all= ::
+      + PostgreSQL clause: =ON DELETE SET NULL=
+      + description: The foreign key of referencing rows will be set as =NULL=.
+
+    - =:restrict= ::
+      + PostgreSQL clause: =ON DELETE RESTRICT=
+      + description: Prevent deletion of a referenced row.
+
+    - =:nothing= (default behavior) ::
+      + PostgreSQL clause: =NO ACTION=
+      + description: Do nothing. (It will cause an error when checking constrains.)
+
+*** the =:on_update= option
+    #+begin_note
+    This option isn't used frequently.
+    #+end_note
+
+    The =:on_update= option specifies the behavior of referencing rows when the column of a referenced rows is updated. Following is the available values.
+
+    - =:update_all= ::
+      + PostgreSQL clause: =ON UPDATE CASCADE=
+      + description: The foreign key of referencing rows will be updated according to the referenced rows.
+
+    - =:nilify_all= ::
+      + PostgreSQL clause: =ON UPDATE SET NULL=
+      + description: The foreign key of referencing rows will be set as =NULL=.
+
+    - =:restrict= ::
+      + PostgreSQL clause: =ON UPDATE RESTRICT=
+      + description: Prevent update of a referenced row.
+
+    - =:nothing= (default behavior) ::
+      + PostgreSQL clause: =NO ACTION=
+      + description: Do nothing. (It will cause an error when checking constrains.)
+
+** Practices
+*** ensure migrations can be rolled back
+    When adding a new migration, we should ensure that we can roll them back.
+
+    Generally, Ecto can infer the rollback behavior of =change/0= function in the migrations. When it can't, consider using =up/0= and =down/0=.
+
+*** should I editing an existing migration?
+    If the migration hasn't been commited to VCS, you are free to edit an existing one.
+
+    If the migration has been committed and you are not the only one in the team, you'd better creating a new one.
+
+** Last
+   The database is ready, it's time to insert data into it.
+
+* =Ecto.Repo=
+  =Ecto.Repo= provides basic API for communicating with database.
+
+** The Repository Pattern
+   Ecto adopts **The Repository Pattern** for accessing underlying data store. In this pattern, there's a role called Repository who controls all the communications between Ecto and data store.
+
+   The general lifecyle of queries looks like:
+   1. All the queries are submitted to the Repository.
+   2. The Repository transforms the queries and send them to data store.
+   3. The Repository handles the responses from data store and transforms them into easy-to-use way.
+
+   The keypoint is **the Repository acts as a gateway of data store**. When you want to make changes to data store, talk to Repository.
+
+** Repository in Ecto
+   =Ecto.Repo= is the so-called /Repository/ in Ecto.
+
+   But, =Ecto.Repo= isn't used directly. It should be used in a self-created module. When creating the sample application, we have created the module called =Paper.Repo=.
+
+   #+begin_note
+   For brevity, in the following sections, I will use =Repo= to represent the self-created module - =Paper.Repo=, and use =Ecto.Repo= to represent the original module.
+   #+end_note
+
+** Low level API for CRUD
+   =Repo= provides low level API to complete CRUD operations directly.
+
+   | Operation Name | Function Name                                           |
+   |----------------+---------------------------------------------------------|
+   | CREATE         | =Repo.insert_all=                                       |
+   | READ           | =Repo.query= (an alias for ~Ecto.Adapters.SQL.query/4~) |
+   | UPDATE         | =Repo.update_all=                                       |
+   | DELETE         | =Repo.delete_all=                                       |
+
+   All =*_all= functions support =:returning= option for selecting which fields to return. Read their documents for more details.
+
+   #+begin_note
+   When using =Repo.query=. you will find the return value is hard to parse. And, working with SQL directly is clumsy and unsafe (SQL injection).
+
+   =Ecto.Query= is the better choice for queries.
+   #+end_note
+
+** Extending Repo
+   =Repo= is a regular Elixir module, we can extend it as normal. It is useful when we want to:
+   + encapsulate tediously long options for particular functions.
+   + add functions that Ecto doesn't support currently.
+   + ...
+
+   For example, adding a counting function:
+   #+begin_src elixir
+   defmodule Paper.Repo do
+     use Ecto.Repo,
+       otp_app: :paper,
+       adapter: Ecto.Adapters.Postgres
+
+     def count(table) do
+       aggregate(table, :count, :id)
+     end
+   end
+   #+end_src
+
+   Call the added function:
+   #+begin_src elixir
+   Paper.Repo.count("authors")
+   #+end_src
+
+** Last
+   Read more details at =h Ecto.Repo=.
+
+* =Ecto.Schema=
+  =Ecto.Schema= provides DSL for mapping data source to Elixir structs.
+
+** Creating schemas
+   #+begin_note
+   Like creating a migration, when creating a schema, we generally define following things:
+   1. table names
+   2. fields
+   3. associations (relationships)
+   #+end_note
+
+*** creating a context first
+    A context is a concept introduced by Phoenix. It is a dedicated module that expose and group related functionality.
+
+    Here, we will just create a context without talking much about it. If you are interested in the details of contexts, please read [[https://hexdocs.pm/phoenix/contexts.html][the official docs]].
+
+    Our context will be named as =CMS=. Now, let's create it by editing =lib/paper/cms.ex=:
+    #+begin_src elixir
+    defmodule Paper.CMS do
+    end
+    #+end_src
+
+    So far, the context is empty, because we have no public API for this context. That's OK.
+
+*** tips about associations
+    =Ecto.Schema= provides following macros for indicating the associations between schemas:
+    + one-to-one - =has_one= / =belongs_to=
+    + one-to-many - =has_many= / =belongs_to=
+    + many-to-many - =many_to_many= with =:join_through= option
+
+    It's hard to understand them without any example. Next, we will create necessary schemas step by step. When you have questions about them, please read respective documents like =h Ecto.Schema.many_to_many=.
+
+*** creating a schema for permalinks
+    Edit =lib/paper/cms/permalink.ex=:
+    #+begin_src elixir
+    defmodule Paper.CMS.Permalink do
+      use Ecto.Schema
+
+      alias Paper.CMS.Post
+
+      schema "permalinks" do
+        belongs_to :post, Post
+        field :url, :string
+
+        timestamps()
+      end
+    end
+    #+end_src
+
+    #+begin_note
+    =schema= and =field= do two things:
+    1. define the mapping between schema and database.
+    2. define a struct for current schema.
+    #+end_note
+
+*** creating a schema for comments
+    Edit =lib/paper/cms/comment.ex=:
+    #+begin_src elixir
+    defmodule Paper.CMS.Comment do
+      use Ecto.Schema
+
+      alias Paper.CMS.Post
+
+      schema "comments" do
+        belongs_to :post, Post
+        field :nickname, :string
+        field :email, :string
+        field :body, :string
+
+        timestamps()
+      end
+    end
+    #+end_src
+
+*** creating a schema for tags
+    Edit =lib/paper/cms/tag.ex=:
+    #+begin_src elixir
+    defmodule Paper.CMS.Tag do
+      use Ecto.Schema
+
+      alias Paper.CMS.Post
+
+      schema "tags" do
+        many_to_many :posts, Post, join_through: "posts_tags"
+        field :name, :string
+
+        timestamps()
+      end
+    end
+    #+end_src
+
+*** creating a schema for posts
+    Edit =lib/paper/cms/post.ex=:
+    #+begin_src elixir
+    defmodule Paper.CMS.Post do
+      use Ecto.Schema
+
+      alias Paper.CMS.Permalink
+      alias Paper.CMS.Comment
+      alias Paper.CMS.Tag
+
+      schema "posts" do
+        field :title, :string
+        field :body, :string
+
+        has_one :permalink, Permalink
+        has_many :comments, Comment
+        many_to_many :tags, Tag, join_through: "posts_tags"
+
+        timestamps()
+      end
+    end
+    #+end_src
+
+*** creating a schema for authors
+    Edit =lib/paper/cms/author.ex=:
+    #+begin_src elixir
+    defmodule Paper.CMS.Author do
+      use Ecto.Schema
+
+      alias Paper.CMS.Post
+
+      schema "authors" do
+        field :name, :string
+        field :bio, :string
+        has_many :posts, Post
+
+        timestamps()
+      end
+    end
+    #+end_src
+
+    Edit =lib/paper/cms/post.ex=:
+    #+begin_src elixir
+    defmodule Paper.CMS.Post do
+      # ...
+
+      alias Paper.CMS.Author
+
+      schema "posts" do
+        # ...
+
+        belongs_to :author, Author
+
+        # ...
+      end
+    end
+    #+end_src
+
+*** available field types
+    - built-in types ::
+      Read more details at *Primative types* section in =h Ecto.Schema=.
+
+    - custom types ::
+      Read more details at *Custom types* section in =h Ecto.Schema=.
+
+** Starting IEx
+   We have created all required schemas, it is time to do some experiments with them.
+
+   Before starting IEx, it is better to add configurations for it. The configurations help us type less.
+
+   Edit =.iex.exs=:
+   #+begin_src elixir
+   import Ecto.Query
+
+   alias Paper.Repo
+   alias Paper.CMS.{Permalink, Tag, Comment, Post, Author}
+   #+end_src
+
+   Now, let's start it:
+   #+begin_src sh
+   $ iex -S mix
+   #+end_src
+
+** CRUD
+*** insert
+    Ecto provides following functions which can be used with schemas:
+    + =Repo.insert=
+    + =Repo.insert!=
+    + =Repo.insert_all=
+    + =Repo.insert_or_update=
+    + =Repo.insert_or_update!=
+
+**** inserting without association
+     Authors and tags can be inserted without associations:
+     #+begin_src elixir
+     # insert authors
+     %Author{name: "Spike", bio: "I have a cool name!"}  |> Repo.insert()
+     %Author{name: "Julia", bio: "I have a beautiful name!"}  |> Repo.insert()
+     Repo.count("authors") #=> 2
+
+     %Tag{name: "Life"} |> Repo.insert()
+     %Tag{name: "Art"} |> Repo.insert()
+     %Tag{name: "Religion"} |> Repo.insert()
+     Repo.count("tags") #=> 3
+     #+end_src
+
+     But, there's a problem here - the data is NOT validated before inserting to database. This means we can insert anything we want. Try to insert a piece of useless data:
+     #+begin_src elixir
+     %Author{name: "", bio: ""}  |> Repo.insert()
+     #+end_src
+
+     Obviously, above useless data is not what we want. If you want to validate the data before inserting to database, =Ecto.Changeset= which will be introduced later is needed.
+
+**** inserting with associations
+     Inserting with associations needs =Ecto.Changeset= which will be introduced later.
+
+*** query
+    Ecto provides following functions which can be used with schemas:
+    + =Repo.all=
+    + =Repo.one=
+    + =Repo.one!=
+    + =Repo.get=
+    + =Repo.get!=
+    + =Repo.get_by=
+    + =Repo.get_by!=
+    + ...
+
+    Query the data we have inserted to database:
+    #+begin_src elixir
+    Repo.all(Author)
+    Repo.get(Author, 2)
+    Repo.get_by(Author, %{name: "Julia"})
+    # ...
+    #+end_src
+
+    If you need build complex query, try to use =Ecto.Query= which will be introduced later.
+
+*** update
+    Ecto provides following functions which can be used with schemas:
+    + =Repo.update=
+    + =Repo.update!=
+    + =Repo.update_all=
+
+    Updating needs =Ecto.Changeset= which will be introduced later.
+
+*** delete
+    Ecto provides following functions which can be used with schemas:
+    + =Repo.delete=
+    + =Repo.delete!=
+    + =Repo.delete_all=
+
+    Delete one author:
+    #+begin_src elixir
+    author = Repo.get_by(Author, %{name: ""})
+
+    case Repo.delete(author) do
+      {:ok, _author} ->
+        "Deleted successfully."
+      {:error, _changeset} ->
+        "Something went wrong."
+    end
+    #+end_src
+
+** Last
+   As you see, without =Ecto.Changeset=, we can't insert or update data reliably.
+
+   Next, we will introduce =Ecto.Changeset=.
+
+* =Ecto.Changeset=
+  =Ecto.Changeset= encapsulates the whole change policy, including allowed fields, detecting changes and validations. It helps us to make changes to database safely.
+
+** About =%Ecto.Changeset{}=
+   =%Ecto.Changeset{}= is the struct holding all the changes will be performed to the database.
+
+   For brevity, in the following sections, I will use =%Changeset{}= instead of =%Ecto.Changeset{}=.
+
+** Basics
+   =Ecto.Changeset= breaks the update process into 3 stages:
+   1. casting and filtering raw data into changes
+   2. validating changes
+   3. sending changes to database
+
+   #+begin_src elixir
+   raw_data
+   |> cast_and_filter
+   |> validate_changes
+   |> send_changes_to_database
+   #+end_src
+
+   Next, we will talk about each step in detail.
+
+** Casting and Filtering
+   The first step is casting and filtering the raw data, and transform it as =%Changeset{}=. In Ecto:
+   + /casting/ means type conversion, like converting string to integer.
+   + /filtering/ means filtering unused data out.
+
+   Depending on where the data is coming from, this step can be done in two different ways.
+
+*** handling internal data
+    #+begin_quote
+    Internal data is the data which is coming from application code.
+    #+end_quote
+
+    Handling internal data can be done with =Ecto.Changeset.change=.
+
+    Create a new changeset from a new schema:
+    #+begin_src elixir
+    import Ecto.Changeset
+
+    changeset = change(%Tag{name: "Music"})
+    #+end_src
+
+    Create a changeset from an existing schema:
+    #+begin_src elixir
+    import Ecto.Changeset
+
+    author = %Author{name: "unknown", bio: ""}  |> Repo.insert()
+    changeset = change(author)
+
+    # add data when calling change function
+    changeset = change(author, name: "Vicious")
+    changeset = change(author, name: "Vicious", bio: "I have an evil name!")
+
+    # change function can be called multiple times
+    changeset = author
+    |> change(name: "Vicious")
+    |> change(bio: "I have a evil name!")
+    #+end_src
+
+    Read more details at =h Ecto.Changeset.change=.
+
+*** handling external data
+    #+begin_quote
+    External data is the data which is coming outside of your application code, such as:
+    + user forms
+    + API calls
+    + command line
+    + CSV file
+    + ...
+    #+end_quote
+
+    When working with external data, we should suppose that the data is dirty, then, *cast* and *filter* them.
+
+    Handling external data can be done with =Ecto.Changeset.cast=.
+
+    #+begin_src elixir
+    params = %{
+    "name" => "Vicious",
+    "bio" => "I have an evil name!",
+    "true_words" => "I want to be a good man."
+    }
+
+    changeset = cast(%Author{}, params, [:name, :bio])
+    #+end_src
+
+    Read more details at =h Ecto.Changeset.cast=.
+
+** Validating
+   After casting and filtering, we have a =%Changeset{}= which represents changes. Before sending it to database, we should also validate the changes.
+
+   Ecto provides two kinds of utilities for validating. They perform similar functions, but differ in implementation:
+   + validations
+   + constraints
+
+*** validations
+    Validations are functions provided by =Ecto.Changeset=. They accept a changeset, return a changeset.
+
+**** built-in validations
+     Built-in validations are in form of =Ecto.Changeset.validate_*=.
+
+     #+begin_src elixir
+     params = %{
+       "name" => "x"
+     }
+
+     changeset =
+       %Author{}
+       |> cast(params, [:name, :bio])
+       |> validate_required([:name, :bio])
+       |> validate_length(:name, min: 3)
+
+     changset.valid? #=> false
+     #+end_src
+
+     When passing all the validations, =changeset.valid?= will be ~true~. Or, =changeset.valid?= will be ~false~, and the details of validation error can be found at =changeset.errors=.
+
+**** custom validations
+     Ecto provides support for custom validations in case that you need validtions which are not supported by it.
+
+     Read more details at =h Ecto.Changeset.validate_change=.
+
+*** constraints
+    Like validations, contraints are functions provided by =Ecto.Changeset=, too. It allows developers to use underlying relational database features to maintain database integrity. Such as, preventing duplicated username in a user management system.
+
+    They accept a changeset, return a changeset, just like validations.
+
+    When using a constraint, you need:
+    1. define database constraints
+    2. catch constraint errors
+
+    Next, we will introduce these 2 steps with =unique_constraint/3=.
+
+    #+begin_note
+    Unlike validations, constraints won't run before hitting database. Instead, they run when Ecto accepts constraint errors returned from database.
+    #+end_note
+
+**** defining database constraints
+     Constraints are enforced by database. Because of that, they should be defined in database level.
+
+     In order to manage database constraints, it is better to create them by using migrations. Just like we did when [[#creating-migrations][creating migrations]].
+     #+begin_src elixir
+     create unique_index(:authors, [:name])
+     #+end_src
+
+**** catching constraint errors
+     If a constraint error isn't catched, it will be raised as =Ecto.ConstraintError=.
+     #+begin_src elixir
+     # create two authors with the same name, which will raise a constraint error.
+     %Author{name: "Spike", bio: ""} |> Repo.insert()
+     %Author{name: "Spike", bio: ""} |> Repo.insert()
+
+     #=>
+     # (Ecto.ConstraintError) constraint error when attempting to insert struct:
+     #
+     # - authors_name_index (unique_constraint)
+     #
+     # If you would like to stop this constraint violation from raising an
+     # exception and instead add it as an error to your changeset, please
+     # call `unique_constraint/3` on your changeset with the constraint
+     # `:name` as an option.
+     #
+     # The changeset has not defined any constraint.
+     #+end_src
+
+     In order to catch it, an =Ecto.Changeset.*_constraint=-like function should be used:
+     #+begin_src elixir
+     %Author{name: "Spike", bio: ""}
+     |> change()
+     |> unique_constraint(:name)
+     |> Repo.insert()
+
+     #=> {:error, changeset}
+     #+end_src
+
+     As you can see,  =Ecto.ConstraintError= is catched and transformed as an error in changeset.
+
+*** execution rules of validations and constraints
+    1. execute all of valiations in order:
+       1. if succeed to execute one validation, execute next validation.
+       2. if failed to execute one validation, execute next validation, too. But, all of constraints will not be executed any more.
+    2. execute all of constraints in order:
+       1. if succeed to execute one constraint, execute another constraint.
+       2. if failed to execute one constraint, the rest of constraints will not be executed any more.
+*** mixins
+    Mixins are functions mix the features of validations and constraints. They have following features:
+    + their execution rules are same as validations.
+    + they communicates with database to validating values.
+
+    #+begin_note
+    Mixin is not a terminology in Ecto. I name them in this way, personally.
+    #+end_note
+
+**** =Ecto.Changeset.unsafe_validate_unique=
+     Read details at =h Ecto.Changeset.unsafe_validate_unique=.
+
+     =Ecto.Changeset.unsafe_validate_unique= isn't a replacement of =Ecto.Changeset.unique_constraint=. It just used for providing a early feedback for users. Generally, it is used in this way:
+     #+begin_src elixir
+     %Author{}
+     |> cast(params, [:name, :bio])
+     |> validate_required(:name)
+     |> unsafe_validate_unique(:name, Repo)
+     |> validate_length(:name, min: 3)
+     |> unique_constraint(:name)
+     #+end_src
+*** rendering errors
+    Ecto doesn't provide solutions for rendering =changeset.errors=. When you need to render them, consider using =Ecto.Changeset.traverse_errors=.
+
+** Send Changes to database
+   Last step, send =%Changeset{}= to database with functions provided by =Repo=, such as =Repo.insert=, =Repo.update=, etc.
+
+** Last
+   Read more details at =Ecto.Changeset=.
+
+* =Ecto.Query=
+  =Ecto.Query= provides DSL for querying. It makes querying simple and elegant.
+
+** Syntax
+   There are two types of syntax when using =Ecto.Query=:
+   + keyword syntax
+   + expression syntax
+
+   Following SQL will be wrote into above two types of syntax:
+   #+begin_src sql
+   SELECT a.name, a.bio FROM authors AS a
+   #+end_src
+
+*** keyword syntax
+    #+begin_src elixir
+    query = from a in "authors", select: [a.name, a.bio]
+
+    Repo.all(query)
+    #+end_src
+
+*** expression syntax
+    #+begin_src elixir
+    query = "authors" |> select([a], [a.name, a.bio])
+
+    Repo.all(query)
+    #+end_src
+
+*** How to choose syntax?
+    #+begin_quote
+    The syntax you choose depends on your taste and the problems you're solving:
+    + keyword syntax: convenient for pulling together ad-hoc queries and solving one-off problems.
+    + expression syntax: better for building an application's unique complex layered query API.
+
+    Each syntax has its advantages.
+
+    -- Programming Phoenix
+    #+end_quote
+
+    Personally, I think the keyword syntax is more convinient to write. Because of that, following queries will be wrote in Keyword Syntax.
+
+** Basic usage
+   A query is created and used in following steps:
+   1. creating a query
+   2. committing a query
+
+*** creating a query
+    When creating a query, you can use a table name string or a schema. All of them have implemented =Ecto.Queryable= protocol.
+
+    Use a table name string:
+    #+begin_src elixir
+    query = from a in "authors", where: a.id == 2, select: [:name]
+    #+end_src
+
+    #+begin_note
+    If not using a schema when building a query, the =:select= option is required. Or, Ecto will raise an error.
+    #+end_note
+
+    Use a schema:
+    #+begin_src elixir
+    query = from a in Author, where: a.id == 2
+    #+end_src
+
+*** committing a query
+    Use =Repo.all= or =Repo.one= for committing a query:
+    #+begin_src elixir
+    Repo.all(query)
+    #+end_src
+
+** Debugging
+   =Ecto.Adapters.SQL.to_sql/3= is used for translating a query to corresponding SQL statement. We can use these functions to help us inspect the details of queries.
+
+   For example:
+   #+begin_src elixir
+   query = from a in "authors", where: a.id == 2, select: [:name]
+
+   Ecto.Adapters.SQL.to_sql(:all, Repo, query)
+   #=> {"SELECT a0.\"name\" FROM \"authors\" AS a0 WHERE (a0.\"id\" = 2)", []}
+
+   # equal to
+   Repo.to_sql(:all, query)
+   #=> {"SELECT a0.\"name\" FROM \"authors\" AS a0 WHERE (a0.\"id\" = 2)", []}
+   #+end_src
+
+** Dynamic values
+*** pin operator
+    In Ecto, =^= (pin operator) is used for marking values or expressions that need interpolation in an Ecto query.
+
+    #+begin_note
+    =^= is named as caret in English.
+    #+end_note
+
+    When =Ecto.Query= is converted into a SQL statement, values and expressions marked by ^ will become parameterized values.
+
+    #+begin_note
+    Parameterized values provides protection against SQL-injection attacks.
+    #+end_note
+
+    An example:
+    #+begin_src elixir
+    author_name = "Spike"
+    query = from "authors", where: [name: ^author_name], select: [:id, :name]
+    Repo.all(query)
+    #=> SELECT a0."id", a0."name" FROM "authors" AS a0 WHERE (a0."name" = $1) ["Spike"]
+    #+end_src
+
+*** type conversion
+    #+begin_src elixir
+    author_id = 2
+    query = from "authors", where: [id: ^author_id], select: [:name]
+    Repo.all(query)
+    #=> [%{name: "Spike"}]​
+
+    author_id = "2"
+    query = from "authors", where: [id: ^author_id], select: [:name]
+    Repo.all(query)
+    #=> Type Error, you have to make type conversion manually.
+
+    artist_id = "2"
+    query = from "authors", where: [id: type(^author_id, :integer)], select: [:name]
+    Repo.all(query)
+    #=> [%{name: "Spike"}]​
+    #+end_src
+
+    #+begin_note
+    =type= function is defined in =Ecto.Query.API=.
+    #+end_note
+
+    Now, type conversion seems tedious. But, after using Schema, the conversion will be done automatically.
+
+** Query bindings
+   A query binding is a variable referring to the table of the query. You can treat it as table alias in SQL.
+
+   There are two types of bindings:
+   + positional bindings
+   + named bindings
+
+   Read more details at *Composition* section in =h Ecto.Query=.
+
+*** which one should I use?
+    When a query is small, using positional bindings would be fine.
+
+    But, when a query is large and contains joins across several tables, using positional bindings would make tracking bindings difficult. Therefore, named bindings is preferred.
+
+** Query API
+   Query API provides functions can be used in a query.
+
+   Read =h Ecto.Query.API= for a complete list of all available API.
+
+** Raw SQL
+   #+begin_quote
+   Best abstractions offer escape hatch.
+
+   -- Programming Phoenix
+   #+end_quote
+
+   Ecto can't represent all possible queries with its own syntax, so it provides two backup plans:
+   1. =Ecto.Query.API.fragment/1=: generate a SQL fragment which can be inserted into a Ecto query.
+   2. =Repo.query= / =Repo.query!=: run a raw SQL with parameterized values.
+
+   Read more details in their docs.
+
+   #+begin_note
+   Although =Ecto.Query.API.fragment/1= is a function provided by =h Ecto.Query.API=, but I still put it in this section because of their correlation.
+   #+end_note
+
+** Filtering with =where=
+   =Ecto.Query= provides two macros for filtering:
+   + =where=
+   + =or_where=
+
+** Combining results with unions
+   When using unions, the two queries need to have result sets with the same column names and data type.
+
+   Supported unions:
+   | macro name      | description                            |
+   |-----------------+----------------------------------------|
+   | =union=         | remove duplicated items.               |
+   | =union_all=     | don't remove duplicated items, faster. |
+   | =intersect=     | remove duplicated items.               |
+   | =intersect_all= | don't remove duplicated items, faster. |
+   | =except=        | remove duplicated items.               |
+   | =except_all=    | don't remove duplicated items, faster. |
+
+** Ordering with =order_by=
+   Read more details at =h Ecto.Query.order_by=.
+
+   When sorting rows by multiple columns specified by =order_by=, the records will grouped and sorted by first column, then by the second column, and so on.
+
+   When ordering, you should also notice =NULL= value. Some databases put them first, others put them last. If you want to control the order explicitly, try following options:
+   + =:asc_nulls_last=
+   + =:asc_nulls_first=
+   + =:desc_nulls_last=
+   + =:desc_nulls_first=
+
+** Grouping with =group_by=
+   When you want to filtering rows after grouping, you should use =having= and =or_having=, rather than =where= and =or_where=.
+
+   Read more details at =h Ecto.Query.group_by=.
+
+** Joins
+   Joins are required when query acroess multiple tables at once.
+
+   Read more details at =h Ecto.Query.join=.
+
+** Composable Queries
+   Ecto queries are composable. This feature can help us to break large queries into small reusable queries. Small queries are easy to read and maintain, which is good for us.
+
+   #+begin_note
+   The small reusable queries are composed into a query via =Ecto.Queryable= protocol.
+   #+end_note
+
+   Read more details at *Composition* section in =h Ecto.Query=.
+
+** Using a schema
+   As you see, we are using table name string in above queries. But, with a schema, we can get better experiences, because it contains:
+   + the type info of fields, type conversion can be done automatically.
+   + the list of fields, =:select= option isn't necessary when querying.
+
+   Give it an example. Without a schema=, we have to do type conversion and specify the =:select= manually:
+   #+begin_src elixir
+   author_id = "2"
+   query = from "authors",
+     where: [id: type(^author_id, :integer)],
+     select: [:name]
+
+   Repo.all(query)
+   #+end_src
+
+   With a schema, query can be simpler:
+   #+begin_src elixir
+   author_id = "2"
+   query = from Author, where: [id: ^author_id]
+
+   Repo.all(query)
+   #+end_src
+
+** Tips
+*** specifying data structure with =:select= option
+    =:select= option is not only for specifying the fields returned, but also the data structure returned.
+
+    #+begin_src elixir
+    query = from a in "authors", where: a.id == 2, select: [a.name]
+    Repo.all(query)
+    #=> [["Spike"]]
+    #+end_src
+
+    #+begin_src elixir
+    query = from a in "authors", where: a.id == 2, select: %{name: a.name}
+    Repo.all(query)
+    #=> [%{name: "Spike"}]
+    #+end_src
+
+    The output become a list of map now.
+
+*** other ways to use queries
+    Besides reading data, queries can be used with =Repo.*_all= functions for updating or deleting data.
+
+    #+begin_src elixir
+    from a in "authors", where: a.bio == ""
+    |> Repo.update_all(set: [bio: "Hello World!"])
+
+    from a in "authors", where: a.bio == "Hello World!"
+    |> Repo.delete_all()
+    #+end_src
+
+    By using queries in this way, we can update or delete data precisely.
+
+** Last
+   Read more at =h Ecto.Query=.
+
+* Associations
+  #+begin_quote
+  Relational Database Management System like PostgreSQL does a lot of works to help developers define and enforce the relationships between tables.
+
+  Instead of treating the database as dumb storage, Ecto uses the strengths of the database to help keeping the data consistent.
+
+  -- Programming Phoenix
+  #+end_quote
+
+  So far, we have talked about data without associations. Now, let's introduce data with associations.
+
+  In this chapter, I will use the associtaion between authors and posts as the example:
+  + one author has many posts.
+  + one post belongs to one author.
+
+  And, records in *authors* table is called as parent records, and records in *posts* table is called as children records.
+
+** Insert / Update
+   When inserting or updating records, there's two questions should be answered first:
+   1. what is the type of records? parent or child?
+   2. If the type is child, how many children records do you want to insert or update?
+
+*** insert / update a parent record
+    Just insert or update it, nothing to say.
+
+*** insert a child record
+    When inserting a child record, =Ecto.build_assoc= is a great choice. You pass it a parent record and the name of association. It returns a new generated child record with the foreign key setting to the parent record:
+    #+begin_src elixir
+    author = Repo.get_by(Author, name: "Spike")
+
+    # bulid a new child record without filling fields
+    Ecto.build_assoc(author, :posts)
+    |> Repo.insert!()
+
+    # bulid a new child record with filling fields
+    Ecto.build_assoc(author, :posts, title: "Hello World!", body: "")
+    |> Repo.insert!()
+
+    # bulid a new child record with filling fields by change()
+    Ecto.build_assoc(author, :posts)
+    |> change(%{title: "Hello World", body: ""})
+    |> Repo.insert!()
+    #+end_src
+
+    Use =Ecto.Changeset.put_assoc=:
+    #+begin_src elixir
+    author = Repo.get_by(Author, name: "Spike")
+
+    %Post{title: "Hello world", body: ""}
+    |> change()
+    |> put_assoc(:author, author)
+    |> Repo.insert!()
+    #+end_src
+
+    We can also set =author_id= field directly.
+
+    Use struct:
+    #+begin_src elixir
+    author = Repo.get_by(Author, name: "Spike")
+
+    %Post{title: "Hello world", body: "", author_id: author.id}
+    |> Repo.insert!()
+    #+end_src
+
+    Use =Ecto.Changeset.put_change=:
+    #+begin_src elixir
+    author = Repo.get_by(Author, name: "Spike")
+
+    %Post{title: "Hello world", body: ""}
+    |> change()
+    |> put_change(:author_id, author.id)
+    |> Repo.insert!()
+    #+end_src
+
+*** update a child record
+    Get a record, update it with =Ecto.Changeset=.
+
+*** insert children records as a whole
+**** handling internal data
+     For handling internal data, we will use =Ecto.Changeset.put_assoc=. It takes a changeset, the name of association, and the records we want to put into the association:
+     #+begin_src elixir
+     Repo.get_by(Author, name: "Spike")
+     |> Repo.preload(:posts)
+     |> change()
+     |> put_assoc(:posts, [%Post{title: "Software Design"}])
+     |> Repo.insert!()
+     #+end_src
+
+     Before making changes to existing associations, the association must be preloaded, just like above example code. But, if the parent record isn't inserted to database, preloading association can be ignored, such as:
+     #+begin_src elixir
+     %Author{name: "Vicious"}
+     |> change()
+     |> put_assoc(:posts, [
+       %Post{title: "12 Principles"},
+       %Post{title: "Software Design"}
+     ])
+     |> Repo.insert!()
+     #+end_src
+
+     Read more details at =h Ecto.Changeset.put_assoc=.
+
+**** handling external data
+     For handling external data, we will use =Ecto.Changeset.cast_assoc=. It takes a changeset and the name of association.
+
+     Moreover, a =changeset= function in associated schema is required by default, you can specify the function name with =with:= option.
+
+     #+begin_src elixir
+     params = %{
+       "name" => "Monica",
+       "posts" => [
+         %{"title" => "Hello World", "body" => ""},
+         %{"title" => "Hello World", "body" => ""}
+       ]
+     }
+
+     %Author{}
+     |> cast(params, [:name])
+     |> cast_assoc(:posts)
+     |> Repo.insert!()
+     #+end_src
+
+     Read more details at =h Ecto.Changeset.cast_assoc=.
+
+*** update children records as a whole
+    When updating children records as a whole, we are still using =Ecto.Changeset.put_assoc= and =Ecto.Changeset.cast_assoc=.
+
+    But, we should consider a question: *When updating, which action should be applied on children records which are replaced?*
+
+    #+begin_quote
+    What is meaning of _being replaced_?
+
+    Imagine a author has many posts where the posts has IDs 1, 2 and 3. If you call =cast_assoc/3= passing only the IDs 1 and 2. Ecto will consider 3 is being _replaced_.
+
+    -- [[https://hexdocs.pm/ecto/3.4.4/Ecto.Changeset.html#module-the-on_replace-option][Official Doc of =Ecto.Changeset=]]
+    #+end_quote
+
+    =Ecto.Schema.*= provides =:on_replace= option to answer this question:
+    + =has_one= has =:raise= / =:mark_as_invaild= / =:nilify= / =:update= / =:delete=.
+    + =has_many= has =:raise= / =:mark_as_invaild= / =:nilify= / =:delete=.
+    + =many_to_many= has  =:raise= / =:mark_as_invaild= / =:delete=.
+
+    #+begin_note
+    =:on_replace= policy is triggered when calling =Ecto.Changeset.put_assoc= and =Ecto.Changeset.cast_assoc=.
+    #+end_note
+
+    Read more details in the *Associations, embeds and on replace* section of =h Ecto.Changeset=.
+
+** Query
+*** load associations
+    Associations must be preloaded manually.
+
+    #+begin_note
+    Ecto doesn't support lazy loading, we have to preload association manually. It helps to avoid N+1 querying problem.
+    #+end_note
+
+    Load associations when querying:
+    #+begin_src elixir
+    query = from Author, preload: :posts
+    authors = Repo.all(query)
+    #+end_src
+
+    Load associations after querying:
+    #+begin_src elixir
+    authors = Author
+    |> Repo.all()
+    |> Repo.preload(:posts)
+    #+end_src
+
+    Above two methods will query database twice regardless of the count of authors:
+    + one for getting all authors
+    + one for getting all posts
+
+    If you wanna get authors and associated posts in one query, =join= can help you:
+    #+begin_src elixir
+    query = from a in Author,
+      join: p in assoc(a, :posts),
+      where: p.title == "Hello World",
+      preload: [posts: p]
+
+    Repo.all(query)
+    #+end_src
+
+*** load associations only
+    #+begin_src elixir
+    author = Repo.get_by(Author, %{name: "Spike"})
+
+    query = Ecto.assoc(author, :posts)
+    Repo.all(query)
+    #+end_src
+
+*** load nested associations
+    #+begin_src elixir
+    query = from Artist, preload: [posts: :comments]
+
+    artists = Repo.all(query)
+    #+end_src
+
+    Ecto will return all artists with posts, and all comments in posts.
+
+** Delete
+*** delete a child record
+    Get a record, delete it.
+
+*** delete a parent record
+    If a parent record has no child record, it is safe to delete it.
+
+    But, if a parent record has children records, you have to consider a question: **which action should be applied on its children records when deleting the parent record?**
+
+    [[#the-options-of-references][The =:on_delete= option of =Ecto.Migration.references=]] provides the answer to this question.
+
+    When using =:nothing= policy, Ecto will raise an constraint error when checking constraint. If you think the error is valuable for users, or it can be fixed by users, you can use one of following constraints to catch this error，then convert it to human-readable message:
+    + =Ecto.Changeset.foreign_key_constraint=
+    + =Ecto.Changeset.no_assoc_constraint=
+
+    #+begin_warn
+    =has_one= / =has_many= / =many_to_many= in =Ecto.Schema= provide =:on_delete= option, too. But, you **SHOULD NEVER USE THEM**. Because these options:
+    + CAN NOT guarantee database integrity.
+    + only triggered by =Ecto.Repo.delete/2=, not including =Ecto.Repo.delete_all/2=.
+    #+end_warn
+
+* Transactions
+  Ecto supports transactions through =Repo.transcation=. There are 2 ways to call this function:
+  + with a function containing the operations will be run within the transaction.
+  + with =Ecto.Multi=
+
+** with a function
+   #+begin_src elixir
+   import Ecto.Changeset, only: [change: 2]
+
+   Repo.transaction(fn ->
+     Repo.update!(change(alice, balance: alice.balance - 10))
+     Repo.update!(change(bob, balance: bob.balance + 10))
+   end)
+   #+end_src
+
+   When a transaction succeeds, =Repo.transaction= returns a tuple ={:ok, return_value_of_the_function}=.
+
+   When a transaction fails:
+   + if an error is raised from the given function:
+     + the transaction will be rolled back automatically.
+     + the error will bubble up.
+   + if no error is raised from the given function:
+     + the transaction will NOT be rolled back automatically. Rollback should be specified explicitly with =Repo.rollback/1=.
+     + =Repo.transaction= returns a tuple ={:error, value_specified_by_Repo_rollback}=.
+
+** with =Ecto.Multi=
+   =Ecto.Multi= groups database operations into a data structure. Compare to the plain function described above, it has some advantages:
+   + you don't have to call Repo functions in the correct way carefully.
+   + write less code.
+   + easy to read.
+   + ...
+
+   #+begin_src elixir
+   alias Ecto.Multi
+
+   multi = Multi.new
+   |> Multi.update(:from, change(alice, balance: alice.balance - 10))
+   |> Multi.update(:to, change(bob, balance: bob.balance + 10))
+   Repo.transaction(multi)
+   #+end_src
+
+   #+begin_note
+   Always create =%Ecto.Multi{}= with =Ecto.Multi.new/0= rather than =%Ecto.Multi{}=.
+   #+end_note
+
+   When a transaction succeeds, =Repo.transaction=  returns a tuple with =:ok= and a map. The keys in the map are the unique names we provided to each operation in the Multi. The values are the return values for each of those operations. This makes it easy for us to grab the return values of any or all of the operations we ran.
+
+   When a transaction fails and you are using changesets,  =Repo.transaction= returns a tuple with 4 items:
+   + =:error=
+   + the failed operation name, like above =:from= or =:to=
+   + the value that caused failure
+   + a map containing changes to database (the changes have been rolled back, but Ecto provides them for you to inspect)
+
+   #+begin_note
+   Ecto is designed to not waste database time. If the =Ecto.Multi= contains operations that use changesets, Ecto will make sure all the changesets are valid. If any are not, Ecto will not run a transaction at all.
+   #+end_note
+
+   When a transaction fails with an raised error:
+   + the transaction will be rolled back automatically.
+   + the error will bubble up.
+
+** which one should I use?
+   #+begin_quote
+   If you are only running a small number of operations and don't need to take different action depending on which operation succeeds or fails, using transaction with a function is enough.
+
+   For all other cases, you should consider =Ecto.Multi=. It has a lot more flexibility, and the code needed to respond to different types of errors will be much cleaner and easier to follow.
+
+   -- Programming Ecto
+   #+end_quote
+
+** executing non-database operations
+   Because Ecto don't know how to rollback non-database operations, you should run all of database operations first, then run non-database operations.
+
+*** with a function
+    #+begin_note
+    Using =Ecto.Multi= for non-database operations is recommended.
+    #+end_note
+
+*** with =Ecto.Multi=
+    Read =h Ecto.Multi.run= for more details.
+
+** introspecting =Ecto.Multi=
+   =%Ecto.Multi{}= is a data structure that can be introspected.
+
+   Ecto team discourages inspecting or manipulating =%Ecto.Multi{}= directly, because the exact structure is subject to change.
+
+   Ecto team provides a function to introspect operations stored in =%Ecto.Multi{}=, read more details at =Ecto.Multi.to_list/1=.
+
+* Seeding
+  Seeding is a mechanism to populate tables with relevant data programatically.
+
+  In Elixir, we can create a script to do this, and make sure that seed scripts is idempotent, because they may be executed multiple times.
+
+** Handling uniqueness
+   You may handling uniqueness problem in this way:
+   #+begin_src elixir
+   Repo.get_by(Tag, name: "Tech") || Repo.insert!(%Tag{name: "Tech"})
+   #+end_src
+
+   But, above operation is unsafe - not an atomic operation. In certain conditions, Ecto will try to insert two same data at the same time, which will cause a database constraint error.
+
+   Instead, we shouldn't handle this uniqueness problem by ourselves. Just insert the data, and let database manage the conflict data - this feature is known as *upsert*.
+
+   In Ecto, the *upsert* feature is implemented as =:on_conflict= option of =Repo.insert!=. A possible example would be:
+   #+begin_src elixir
+   # ignore conflicting data
+   Repo.insert!(%Tag{name: "Tech", on_conflict: :nothing})
+   #+end_src
+
+   There are lots of available values for =:on_conflict= option, read more details at =h Repo.insert=.
+
+   #+begin_note
+   *Upsert* feature is often database specific, make sure that your database supports it before using.
+
+   PS: Choose PostgreSQL, everything will be fine.
+   #+end_note
+
+** Populate data with Schema
+   Data can be inserted with Schema easily, even associated data.
+
+   #+begin_src elixir
+   Repo.insert(
+     %Author{
+       name: "Jet",
+       posts: [
+         %Post{
+           title: "Hello World!",
+           body: "Here you go!"
+         }
+       ]
+     }
+   )
+   #+end_src
+
+* Appendix
+** Naming conventions
+   + Migration
+     + tables' name - =pluralized_name=
+   + Schema
+     + module name - =SnakeSingularizedName=
+     + file name - =underscore_singularized_name=
+     + functions' arguments - ~attrs~
+   + Context
+     + module - =SnakePluralizedName=
+     + file name - =underscore_pluralized_name=
+     + functions' arguments - ~attrs~
+
+** Related Mix tasks
+   Repo related:
+   + =ecto.gen.repo=: Generates a new repository.
+
+   Database related:
+   + =ecto.create=: Creates the repository storage.
+   + =ecto.drop=:  Drops the repository storage.
+
+   Dump related:
+   + =ecto.dump=: Dumps the repository database structure.
+   + =ecto.load=: Loads previously dumped database structure.
+
+   Migration related:
+   + =ecto.gen.migration=: Generates a new migration for the repo.
+   + =ecto.migrations=: Displays the repository migration status.
+   + =ecto.migrate=: Runs the repository migrations.
+   + =ecto.rollback=: Rolls back the repository migrations.
+
+   Common aliases:
+   + =ecto.setup= - An alias defined in ~mix.exs~, generally:
+     + =mix ecto.create=
+     + =mix ecto.migrate=
+     + =mix run priv/repo/seeds.exs=
+   + =ecto.reset= - An alias defined in ~mix.exs~, generally:
+     + =mix ecto.drop=
+     + =mix ecto.setup=
+
+** Schema related tips
+*** #1
+    In Ecto, a table is not coupled to only one schema, we can create more than one schema for a table.
+
+*** #2
+    In Ecto, a schema is not coupled to only one update policy, we can create more than one update policies for a schema. Each update policy has its own separate =changeset/2= function.
+
+** About timestamps
+   | Migration Type         | Postgres type                    | Store microseconds? | Support DateTime functions? | Support NaiveDateTime functions? |
+   |------------------------+----------------------------------+---------------------+-----------------------------+----------------------------------|
+   | =:utc_datetime_usec=   | =timestamp without time zone=    | Yes                 | Yes                         | Yes                              |
+   | =:naive_datetime_usec= | =timestamp without time zone=    | Yes                 | No                          | Yes                              |
+   | =:utc_datetime=        | =timestamp without time zone(0)= | No                  | Yes                         | Yes                              |
+   | =:naive_datetime=      | =timestamp without time zone(0)= | No                  | No                          | Yes                              |
+
+   By default, Ecto use :naive_datetime and don't preserve microsecond information.
+
+*** What is the meaning of =(0)=?
+    =(0)= means that fractional seconds are not stored.
+
+*** Use =:utc_datetime_usec= globally
+    Apply on Migrations via configuration of Repo:
+    #+begin_src elixir
+    config :paper, Paper.Repo, migration_timestamps: [type: :utc_datetime_usec]
+    #+end_src
+
+    Apply on schemas according to [[https://hexdocs.pm/ecto/Ecto.Schema.html#module-schema-attributes][official docs]]:
+    #+begin_src elixir
+    # Define a module to be used as base
+    defmodule Paper.Schema do
+      defmacro __using__(_) do
+        quote do
+          use Ecto.Schema
+          @timestamps_opts [type: :utc_datetime_usec]
+        end
+      end
+    end
+
+    # Use MyApp.Schema to define new schemas
+    defmodule Paper.CMS.Comment do
+      use Paper.Schema
+
+      schema "comments" do
+        timestamps()
+      end
+    end
+    #+end_src
+
+*** Use =:utc_datetime_usec= locally
+    Apply on Migrations:
+    #+begin_src elixir
+    defmodule Paper.Repo.Migrations.CreateComments do
+      use Ecto.Migration
+
+      def change do
+        create table("comments") do
+          # ...
+
+          timestamps(type: :utc_datetime_usec)
+        end
+      end
+    end
+    #+end_src
+
+    Apply on Schemas:
+    #+begin_src elixir
+    defmodule Paper.CMS.Comment do
+      use Ecto.Schema
+
+      schema "comments" do
+        # ...
+
+        timestamps(type: :utc_datetime_usec)
+      end
+    end
+    #+end_src
+
+** Setting default value for fields?
+*** set default value in database level
+    Set default value for columns by using =:default= option of =add= macro in =Ecto.Migration=.
+
+    #+begin_note
+    Furthermore, the default value set in this way is used when inserting new rows, including:
+    + insert new rows.
+    + insert new columns for existing rows.
+    #+end_note
+
+*** set default value in application level
+    There're two ways to set default value in application level:
+    + use =:default= option of =field= macro in =Ecto.Schema=.
+    + use =Ecto.Changeset.put_change= or similar functions.
+
+    Default values set by =:default= option will be evaluated at compilation time, so you shouldn't use them if you need dynamic values.
+
+    #+begin_note
+    =Ecto.Changeset.put_change= or similar functions is preferred in this case.
+    #+end_note
+
+*** which one should I use?
+    If you have multiple applications using the same database, and:
+    + if they need same default values, default values can be set in schemas or migrations.
+    + if they need different default values, default values should be set in schemas.
+
+    If you only have one application, default values can be set in schemas or migrations.
+
+    When possible, I prefer using schemas. Because in this way, I can reduce the frequency of changing database, which makes me iterate application faster.
+
+** Commonly used constraints
+   We have known the usage of =unique_constraint/3=. In this section, we will introduce other commonly used constraints.
+
+*** =foreign_key_constraint/3=
+    This function checks foreign key constraint in the given field.
+
+    When inserting / updating a post, check if the foreign key is valid:
+    #+begin_src elixir
+    post
+    |> change()
+    |> foreign_key_constraint(:author_id)
+    |> Repo.insert!()
+    #+end_src
+
+    When deleting a author, check if there's no associated post:
+    #+begin_src elixir
+    author
+    |> change()
+    |> foreign_key_constraint(
+      :posts,
+      name: :posts_author_id_fkey,
+      message: "still exists"
+    )
+    |> Repo.delete!()
+    #+end_src
+
+    #+begin_note
+    As you can see, using =foreign_key_contraint/3= when deleting a record, we have to define the contraint name manually. That is verbose. So I prefer using =no_assoc_constraint/3=.
+    #+end_note
+
+*** =assoc_constraint/3=
+    This function checks if the associated field exists. It is generally used when inserting or updating record.
+
+    =assoc_constraint/3= is similar to =foreign_key_constraint/3=, but field of foreign key is inferred from association definition rather than being specified exactly.
+
+    When inserting / updating a post, check if the foreign key is valid:
+    #+begin_src elixir
+    post
+    |> change()
+    |> assoc_constraint(:author) // infer the foreign key from association name
+    |> Repo.insert!()
+    #+end_src
+
+*** =no_assoc_constraint/3=
+    Check the associated field doesn't exist. It is generally used when deleting record.
+
+    Define the foreign key:
+    #+begin_src elixir
+    create table("posts") do
+      add :author_id, references("authors")
+    end
+    #+end_src
+
+    When deleting a record, check if no child exists:
+    #+begin_src elixir
+    author
+    |> change()
+    |> no_assoc_constraint(:posts)
+    |> Repo.delete!()
+    #+end_src
+
+** Don't use constraints all the time
+   #+begin_quote
+   Using changeset constraints only makes sense if the error message can be something the user can take action on.
+   #+end_quote
+
+   Constraints is useful when converting error into human-readable messages. But you don't have to use them all the time.
+
+   Actually, our above example isn't very well. In a blogging system, every post should have a author. If not, it can only be a bug in our application or a data-integrity issue. In such case, the user can do nothing to fix the error, so crashing is the best option. You shouldn't convert such kind of error into human-readable messages any more.
+
+* License
+  This book is restricted by [[https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en][CC BY-NC-SA 4.0]].
