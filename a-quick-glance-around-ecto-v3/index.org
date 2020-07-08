@@ -1,5 +1,5 @@
 #+SETUPFILE: ../org-setup/export-html.org
-#+TITLE: A Quick Glance Around Ecto v3
+#+TITLE: A Quick Glance Around Ecto v3 (ALPHA)
 #+AUTHOR: c4710n
 #+DESCRIPTION: Learn Ecto v3 in a fast way.
 #+KEYWORDS: Elixir, Erlang, Ecto, Phoenix, Tutorial, Book
@@ -46,6 +46,22 @@ Hope you guys like it!
    English isn't my mother language. When you find any error, it would be nice if you can [[mailto:c4710n@pm.me][email me]] or [[https://github.com/c4710n/the-books-of-alchemy/issues][create an issue]].
    #+end_quote
 
+** The types of annotations
+   #+begin_question
+   This is a question you will ask.
+   #+end_question
+
+   #+begin_quote
+   This a quote.
+   #+end_quote
+
+   #+begin_note
+   This a note.
+   #+end_note
+
+   #+begin_warn
+   This is a warning.
+   #+end_warn
 ** Notation of shell commands
    The shell commands is prefixed by =$= which is the default prompt for ordinary UNIX users.
 
@@ -1769,7 +1785,7 @@ Hope you guys like it!
 *** #2
     In Ecto, a schema is not coupled to only one update policy, we can create more than one update policies for a schema. Each update policy has its own separate =changeset/2= function.
 
-** About timestamps
+** About timestamps                                                :noexport:
    | Migration Type         | Postgres type                    | Store microseconds? | Support DateTime functions? | Support NaiveDateTime functions? |
    |------------------------+----------------------------------+---------------------+-----------------------------+----------------------------------|
    | =:utc_datetime_usec=   | =timestamp without time zone=    | Yes                 | Yes                         | Yes                              |
@@ -1922,7 +1938,7 @@ Hope you guys like it!
     end
     #+end_src
 
-    When deleting a record, check if no child exists:
+    When deleting a record, ensure that no child exists:
     #+begin_src elixir
     author
     |> change()
@@ -1940,4 +1956,4 @@ Hope you guys like it!
    Actually, our above example isn't very well. In a blogging system, every post should have a author. If not, it can only be a bug in our application or a data-integrity issue. In such case, the user can do nothing to fix the error, so crashing is the best option. You shouldn't convert such kind of error into human-readable messages any more.
 
 * License
-  This book is restricted by [[https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en][CC BY-NC-SA 4.0]].
+  Besides the quotes, the rest parts of this book are restricted by [[https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en][CC BY-NC-SA 4.0]].
