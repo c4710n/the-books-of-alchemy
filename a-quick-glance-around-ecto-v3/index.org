@@ -1961,4 +1961,4 @@ Hope you guys like it!
    Actually, our above example isn't very well. In a blogging system, every post should have a author. If not, it can only be a bug in our application or a data-integrity issue. In such case, the user can do nothing to fix the error, so crashing is the best option. You shouldn't convert such kind of error into human-readable messages any more.
 
 * License
-  Besides the quotes, the rest parts of this book are restricted by [[https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en][CC BY-NC-SA 4.0]].
+  Except the quotes, the rest parts of this book are restricted by [[https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en][CC BY-NC-SA 4.0]].
