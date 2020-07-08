@@ -1,3 +1,4 @@
 #+HTML_DOCTYPE: html5
 #+HTML_HEAD: <link rel="stylesheet" type="text/css" href="../css/org-html-style.css" />
+#+HTML_HEAD: <script defer src="../js/toc.js"></script>
 #+OPTIONS: html5-fancy html-style:nil toc:2 H:4 p:t
