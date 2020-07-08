@@ -780,6 +780,11 @@ body::after {
     text-decoration: none;
   }
 
+#content {
+  word-wrap: break-word;
+  word-wrap: break-word;
+}
+
 /* headers */
 
 h1,
@@ -874,6 +879,12 @@ p + ul,
 .org-dl dd {
     padding-left: 2rem;
   }
+
+/* table */
+
+table {
+  margin-bottom: 1rem;
+}
 
 /* anotations */
 
@@ -1016,6 +1027,7 @@ code {
 code {
   background-color: #f7fafc;
   background-color: var(--color-box-bg);
+  word-break: break-all;
   border-radius: 0.125rem;
   padding-left: 0.5rem;
   padding-right: 0.5rem;
