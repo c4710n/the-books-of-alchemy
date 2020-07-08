@@ -5,7 +5,9 @@
 #+KEYWORDS: Elixir, Erlang, Ecto, Phoenix, Tutorial, Book
 #+FLYSPELL: t
 
-In order to help more people in Elixir community, I organize my personal notes, and publish them as a free online book.
+Ecto is the most popular persistence framework in Elixir Community.
+
+In order to help more people to learn Ecto, I organize my personal notes, and publish them as a free online book.
 
 Hope you guys like it!
 
@@ -20,9 +22,12 @@ Hope you guys like it!
   </header>
   #+end_src
 
-* Introduction
-  Ecto is the most popular persistence framework in Elixir Community.
+  #+NAME: html-preamble-format
+  #+begin_src emacs-lisp
+  %C
+  #+end_src
 
+* Introduction
   This book will act as a map of large numbers of docs, and guide you to glance over the main features of Ecto v3 by trying to construct the database layer of a blogging system.
 
   If you want to have a deep insight of Ecto or more complicated use cases, you can read more in [[https://hexdocs.pm/ecto/][Ecto's Docs]], [[https://pragprog.com/book/wmecto/programming-ecto][Programming Ecto]] or [[https://dashbit.co/ebooks/the-little-ecto-cookbook][The Little Ecto Cookbook]].
