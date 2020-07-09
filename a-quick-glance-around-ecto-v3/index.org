@@ -14,6 +14,21 @@ Hope you guys like it!
 * export settings                                                  :noexport:
   #+NAME: html-head-extra
   #+begin_src html
+  <!-- sorry for the tracking code -->
+  <script type="text/javascript">
+    var _paq = window._paq || [];
+    /* tracker methods like "setCustomDimension" should be called before "trackPageView" */
+    _paq.push(['trackPageView']);
+    _paq.push(['enableLinkTracking']);
+    (function() {
+    var u="//matomo.2nd-spine.com/";
+    _paq.push(['setTrackerUrl', u+'matomo.php']);
+    _paq.push(['setSiteId', '6']);
+    var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+    g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
+    })();
+  </script>
+
   <header class="header">
     <div class="logo-wrapper">
       <span class="logo">ECTO</span>
@@ -492,7 +507,7 @@ Hope you guys like it!
 
    Ecto maps primitive types to the appropriate database column types by the database adapters. Such as:
    + map =:string= to =:varchar=
-   + map =:binary= to =:bytea= or =:blob=.
+   + map =:binary= to =:bytea=
    + ...
 
    #+begin_note
