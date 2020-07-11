@@ -11,6 +11,10 @@ In order to help more people to learn Ecto, I organize my personal notes, and pu
 
 Hope you guys like it!
 
+#+begin_export html
+<button class="toc-trigger">TOC</button>
+#+end_export
+
 * export settings                                                  :noexport:
   #+NAME: html-head-extra
   #+begin_src html
@@ -28,13 +32,6 @@ Hope you guys like it!
     g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
     })();
   </script>
-
-  <header class="header">
-    <div class="logo-wrapper">
-      <span class="logo">ECTO</span>
-    </div>
-    <button class="toc-trigger">TOC</button>
-  </header>
   #+end_src
 
   #+NAME: html-preamble-format
