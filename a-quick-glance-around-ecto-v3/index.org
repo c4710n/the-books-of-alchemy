@@ -321,7 +321,7 @@ Hope you guys like it!
    2. columns
    3. relationships
    4. default values
-   4. indexes
+   5. indexes
    #+end_note
 
 *** build relation ship between authors and posts (1-N)
@@ -348,9 +348,9 @@ Hope you guys like it!
         end
 
         create table(:posts) do
+          add :author_id, references(:authors, on_delete: :nilify_all)
           add :title, :varchar, null: false
           add :body, :text, null: false
-          add :author_id, references(:authors, on_delete: :nilify_all)
 
           timestamps()
         end
@@ -380,8 +380,8 @@ Hope you guys like it!
 
       def change do
         create table(:permalinks) do
-          add :url, :varchar, null: false
           add :post_id, references(:posts, on_delete: :delete_all), null: false
+          add :url, :varchar, null: false
 
           timestamps()
         end
@@ -413,10 +413,10 @@ Hope you guys like it!
 
       def change do
         create table(:comments) do
+          add :post_id, references(:posts, on_delete: :delete_all), null: false
           add :email, :varchar, null: false
           add :nickname, :varchar, null: false
           add :body, :text, null: false
-          add :post_id, references(:posts, on_delete: :delete_all), null: false
 
           timestamps()
         end
@@ -642,6 +642,7 @@ Hope you guys like it!
    1. table names
    2. fields
    3. associations (relationships)
+   4. default values
    #+end_note
 
 *** creating a context first
@@ -655,15 +656,39 @@ Hope you guys like it!
     end
     #+end_src
 
-    So far, the context is empty, because we have no public API for this context. That's OK.
+    So far, the context is empty, because we have no public API for this context.
 
-*** tips about associations
+*** association related macros
     =Ecto.Schema= provides following macros for indicating the associations between schemas:
     + one-to-one - =has_one= / =belongs_to=
     + one-to-many - =has_many= / =belongs_to=
     + many-to-many - =many_to_many= with =:join_through= option
 
     It's hard to understand them without any example. Next, we will create necessary schemas step by step. When you have questions about them, please read respective documents like =h Ecto.Schema.many_to_many=.
+
+*** creating a schema for authors
+    Edit =lib/paper/cms/author.ex=:
+    #+begin_src elixir
+    defmodule Paper.CMS.Author do
+      use Ecto.Schema
+
+      alias Paper.CMS.Post
+
+      schema "authors" do
+        field :name, :string
+        field :bio, :string
+        has_many :posts, Post
+
+        timestamps()
+      end
+    end
+    #+end_src
+
+    #+begin_note
+    =schema= and =field= do two things:
+    1. define the mapping between schema and database.
+    2. define a struct for current schema.
+    #+end_note
 
 *** creating a schema for permalinks
     Edit =lib/paper/cms/permalink.ex=:
@@ -681,12 +706,6 @@ Hope you guys like it!
       end
     end
     #+end_src
-
-    #+begin_note
-    =schema= and =field= do two things:
-    1. define the mapping between schema and database.
-    2. define a struct for current schema.
-    #+end_note
 
 *** creating a schema for comments
     Edit =lib/paper/cms/comment.ex=:
@@ -730,54 +749,21 @@ Hope you guys like it!
     defmodule Paper.CMS.Post do
       use Ecto.Schema
 
+      alias Paper.CMS.Author
       alias Paper.CMS.Permalink
       alias Paper.CMS.Comment
       alias Paper.CMS.Tag
 
       schema "posts" do
-        field :title, :string
-        field :body, :string
-
+        belongs_to :author, Author
         has_one :permalink, Permalink
         has_many :comments, Comment
         many_to_many :tags, Tag, join_through: "posts_tags"
 
-        timestamps()
-      end
-    end
-    #+end_src
-
-*** creating a schema for authors
-    Edit =lib/paper/cms/author.ex=:
-    #+begin_src elixir
-    defmodule Paper.CMS.Author do
-      use Ecto.Schema
-
-      alias Paper.CMS.Post
-
-      schema "authors" do
-        field :name, :string
-        field :bio, :string
-        has_many :posts, Post
+        field :title, :string
+        field :body, :string
 
         timestamps()
-      end
-    end
-    #+end_src
-
-    Edit =lib/paper/cms/post.ex=:
-    #+begin_src elixir
-    defmodule Paper.CMS.Post do
-      # ...
-
-      alias Paper.CMS.Author
-
-      schema "posts" do
-        # ...
-
-        belongs_to :author, Author
-
-        # ...
       end
     end
     #+end_src
@@ -792,14 +778,14 @@ Hope you guys like it!
 ** Starting IEx
    We have created all required schemas, it is time to do some experiments with them.
 
-   Before starting IEx, it is better to add configurations for it. The configurations help us type less.
+   Before starting IEx, it is better to add configurations for it. The configurations help us type less every time we starting IEx.
 
    Edit =.iex.exs=:
    #+begin_src elixir
    import Ecto.Query
 
    alias Paper.Repo
-   alias Paper.CMS.{Permalink, Tag, Comment, Post, Author}
+   alias Paper.CMS.{Author, Permalink, Tag, Comment, Post}
    #+end_src
 
    Now, let's start it:
@@ -896,12 +882,12 @@ Hope you guys like it!
   =Ecto.Changeset= encapsulates the whole change policy, including allowed fields, detecting changes and validations. It helps us to make changes to database safely.
 
 ** About =%Ecto.Changeset{}=
-   =%Ecto.Changeset{}= is the struct holding all the changes will be performed to the database.
+   =%Ecto.Changeset{}= is the struct holding all the changes which will be performed to the database.
 
    For brevity, in the following sections, I will use =%Changeset{}= instead of =%Ecto.Changeset{}=.
 
 ** Basics
-   =Ecto.Changeset= breaks the update process into 3 stages:
+   General updating process is broke up into 3 stages:
    1. casting and filtering raw data into changes
    2. validating changes
    3. sending changes to database
@@ -918,7 +904,7 @@ Hope you guys like it!
 ** Casting and Filtering
    The first step is casting and filtering the raw data, and transform it as =%Changeset{}=. In Ecto:
    + /casting/ means type conversion, like converting string to integer.
-   + /filtering/ means filtering unused data out.
+   + /filtering/ means removing unused data.
 
    Depending on where the data is coming from, this step can be done in two different ways.
 
