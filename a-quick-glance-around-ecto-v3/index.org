@@ -119,7 +119,7 @@ Hope you guys like it!
 ** Adding dependencies
    Two packages are required:
    + =ecto_sql=
-   + =postgrex= - database driver for PostgreSQL
+   + =postgrex= - database adapter for PostgreSQL
 
    Edit =mix.exs=:
    #+begin_src elixir
@@ -136,12 +136,35 @@ Hope you guys like it!
    $ mix deps.get
    #+end_src
 
-** Creating a Repo
+** Setting up a Repo
+*** running a Mix task
    #+begin_quote
    You may be wondering what a Repo is. Now, just think it as a normal Elixir module. We will explain it later.
    #+end_quote
 
-   Edit =lib/paper/repo.ex=:
+   Generating a Repo:
+   #+begin_src sh
+   $ mix ecto.gen.repo -r Paper.Repo
+   #+end_src
+
+   Above command will output:
+   #+begin_src text
+   ,* creating lib/paper
+   ,* creating lib/paper/repo.ex
+   ,* creating config/config.exs
+   Don't forget to add your new repo to your supervision tree
+   (typically in lib/paper/application.ex):
+
+       {Paper.Repo, []}
+
+   And to add it to the list of ecto repositories in your
+   configuration files (so Ecto tasks work as expected):
+
+       config :paper,
+         ecto_repos: [Paper.Repo]
+   #+end_src
+
+   As you can see, it generates =lib/paper/repo.ex=:
    #+begin_src elixir
    defmodule Paper.Repo do
      use Ecto.Repo,
@@ -150,58 +173,31 @@ Hope you guys like it!
    end
    #+end_src
 
+   #+begin_note
    About the options:
    + =:otp_app= option indicates the location of Ecto configuration.
    + =:adapter= option indicates the database adapter.
-
-   #+begin_note
-   You can name =Paper.Repo= as whatever you want, but =Repo= is prefered in convention.
    #+end_note
 
-** Adding Repo to supervision tree
-   Edit =lib/paper/application.ex=:
+*** adding rest configurations
+   Edit =lib/paper/application.ex= for adding Repo to supervision tree:
    #+begin_src elixir
-   defmodule Paper.Application do
-     # See https://hexdocs.pm/elixir/Application.html
-     # for more information on OTP Applications
-     @moduledoc false
-
-     use Application
-
-     def start(_type, _args) do
-       children = [
-         # add repo to supervision tree
-         {Paper.Repo, []}
-       ]
-
-       # See https://hexdocs.pm/elixir/Supervisor.html
-       # for other strategies and supported options
-       opts = [strategy: :one_for_one, name: Paper.Supervisor]
-       Supervisor.start_link(children, opts)
-     end
+   # ...
+   def start(_type, _args) do
+     children = [
+       # add repo to supervision tree
+       {Paper.Repo, []}
+     ]
+     # ...
    end
+   # ...
    #+end_src
 
-** Adding configurations
-   Edit =config/config.exs=:
-   #+begin_src elixir
-   import Config
-
-   # make Ecto related Mix tasks work as expected.
-   config :paper,
-     ecto_repos: [Paper.Repo]
-
-   # add configurations for connecting database.
-   config :paper, Paper.Repo,
-     database: "paper_repo",
-     username: "postgres",
-     password: "postgres",
-     hostname: "localhost"
-   #+end_src
-
-   #+begin_note
-   Make sure the username and password specified in config file match yours.
-   #+end_note
+    Edit =config/config.exs= for making Ecto related Mix tasks work as expected:
+    #+begin_src elixir
+    config :paper,
+      ecto_repos: [Paper.Repo]
+    #+end_src
 
 ** Creating database
    #+begin_src sh
@@ -268,9 +264,9 @@ Hope you guys like it!
 
   =ecto= package - contains the core functionalities:
   + =Repo= handles all the communications between Ecto and data store.
-  + =Query= provides DSL for querying.
   + =Schema= provides DSL for mapping data source to Elixir structs.
   + =Changeset= provides functions for handling changes.
+  + =Query= provides DSL for querying.
   + =Multi= controls transactions in a clean way.
 
   =ecto_sql= package - provides SQL-based adapters and database migrations:
@@ -295,20 +291,16 @@ Hope you guys like it!
 ** What is a migration?
    A migration is a file includes a set of instructions which changes database structure.
 
-** Generating template for migrations
-   The default directory for storing migrations is =priv/repo/migrations=. We can create migration file in that directory manually.
-
-   But,  Ecto provides a Mix task for generating a migration, let's use it:
-   #+begin_src sh
-   $ mix ecto.gen.migration <migration name>
-   #+end_src
-
-   After executing above command, a new migration file containing a module with empty =change= function will be generated.
-
 ** Creating migrations
    :PROPERTIES:
    :CUSTOM_ID: creating-migrations
    :END:
+   Ecto provides a Mix task for generating a template for migrations:
+   #+begin_src sh
+   $ mix ecto.gen.migration <migration name>
+   #+end_src
+
+   After executing above command, a new migration file containing a module with empty =change= function will be generated in =priv/repo/migrations=.
 
    In relational database, there are 3 types of relationships:
    + on-to-one (1-1)
@@ -316,10 +308,10 @@ Hope you guys like it!
    + many-to-many (N-N)
 
    As we saw in [[#sample-data-model][Sample Data Model]], we have four relationships, and they cover all types of relationships:
-   + the relationship between posts and permalinks is one-to-one.
+   + the relationship between authors and posts is one-to-many.
    + the relationship between posts and comments is one-to-many.
    + the relationship between posts and tags is many-to-many.
-   + the relationship between authors and posts is one-to-many.
+   + the relationship between posts and permalinks is one-to-one.
 
    Next, we will take the sample data model as an example, and demonstrate how to create migrations for all of these relationships.
 
@@ -328,8 +320,48 @@ Hope you guys like it!
    1. table names
    2. columns
    3. relationships
+   4. default values
    4. indexes
    #+end_note
+
+*** build relation ship between authors and posts (1-N)
+    As we said above:
+    + one author has many posts.
+    + one post belongs to one author.
+
+    Generate a migration file:
+    #+begin_src sh
+    $ mix ecto.gen.migration assoc_authors_posts
+    #+end_src
+
+    Edit the generated migration file:
+    #+begin_src elixir
+    defmodule Paper.Repo.Migrations.AssocAuthorsPosts do
+      use Ecto.Migration
+
+      def change do
+        create table(:authors) do
+          add :name, :varchar, null: false
+          add :bio, :text, null: false
+
+          timestamps()
+        end
+
+        create table(:posts) do
+          add :title, :varchar, null: false
+          add :body, :text, null: false
+          add :author_id, references(:authors, on_delete: :nilify_all)
+
+          timestamps()
+        end
+      end
+    end
+    #+end_src
+
+    Apply the new migration:
+    #+begin_src sh
+    $ mix ecto.migrate
+    #+end_src
 
 *** build relationship between posts and permalinks (1-1)
     As we said above:
@@ -347,22 +379,14 @@ Hope you guys like it!
       use Ecto.Migration
 
       def change do
-        create table("posts") do
-          add :title, :string, null: false
-          add :body, :text, null: false
+        create table(:permalinks) do
+          add :url, :varchar, null: false
+          add :post_id, references(:posts, on_delete: :delete_all), null: false
 
           timestamps()
         end
 
-        create table("permalinks") do
-          add :post_id, references("posts"), null: false
-          add :url, :string, null: false
-
-          timestamps()
-        end
-
-        create unique_index("permalinks", [:post_id])
-        create unique_index("permalinks", [:url])
+        create unique_index(:permalinks, [:url])
       end
     end
     #+end_src
@@ -388,11 +412,11 @@ Hope you guys like it!
       use Ecto.Migration
 
       def change do
-        create table("comments") do
-          add :post_id, references("posts"), null: false
-          add :nickname, :string, null: false
-          add :email, :string, null: false
+        create table(:comments) do
+          add :email, :varchar, null: false
+          add :nickname, :varchar, null: false
           add :body, :text, null: false
+          add :post_id, references(:posts, on_delete: :delete_all), null: false
 
           timestamps()
         end
@@ -421,57 +445,20 @@ Hope you guys like it!
       use Ecto.Migration
 
       def change do
-        create table("posts") do
-        end
-
-        create table("tags") do
-        end
-
-        create table("posts_tags", primary_key: false) do
-          add :post_id, references("posts"), null: false
-          add :tag_id, references("tags"), null: false
-        end
-
-        create unique_index("posts_tags", [:post_id, :tag_id])
-        create index("posts_tags", [:post_id])
-        create index("posts_tags", [:tag_id])
-      end
-    end
-    #+end_src
-
-    Apply the new migration:
-    #+begin_src sh
-    $ mix ecto.migrate
-    #+end_src
-
-*** build relation ship between authors and posts (1-N)
-    As we said above:
-    + one author has many posts.
-    + one post belongs to one author.
-
-    Generate a migration file:
-    #+begin_src sh
-    $ mix ecto.gen.migration assoc_authors_posts
-    #+end_src
-
-    Edit the generated migration file:
-    #+begin_src elixir
-    defmodule Paper.Repo.Migrations.AssocAuthorsPosts do
-      use Ecto.Migration
-
-      def change do
-        create table("authors") do
-          add :name, :string, null: false
-          add :bio, :string, null: false
+        create table(:tags) do
+          add :name, :varchar, null: false
 
           timestamps()
         end
 
-        alter table("posts") do
-          add :author_id, references("authors"), null: false
+        create table(:posts_tags, primary_key: false) do
+          add :post_id, references(:posts, on_delete: :delete_all), null: false
+          add :tag_id, references(:tags, on_delete: :delete_all), null: false
         end
 
-        create unique_index("authors", [:name])
+        create unique_index(:posts_tags, [:post_id, :tag_id])
+        create index(:posts_tags, [:post_id])
+        create index(:posts_tags, [:tag_id])
       end
     end
     #+end_src
@@ -482,27 +469,24 @@ Hope you guys like it!
     #+end_src
 
 ** Applying migrations
-   We have introduced how to apply migration in above section. Read more details at:
+   We have introduced how to apply migration in above sections. Read more details at:
    #+begin_src sh
    $ mix help ecto.migrate
    #+end_src
 
 ** Rolling back migrations
-   #+begin_src sh
-   $ mix ecto.rollback
-   #+end_src
-
    Read more details at:
    #+begin_src sh
    $ mix help ecto.rollback
    #+end_src
 
 ** Available column types
-   When [[#creating-migrations][creating migrations]], we have specified some column types, such as =:string= or =:text=.
+   When [[#creating-migrations][creating migrations]], we have specified some column types, such as =:varchar= or =:text=. These data types supported by database can be used directly in migrations. And, data types with database-specific options can be used, too. Such as:
+   + ~:"int unsigned"~
+   + ~:"time without time zone"~
+   + ...
 
-   =text= is a valid SQL data type, but =string= not. So, what is that?
-
-   Ecto maps primitive types to the appropriate database column types by the database adapters. Such as:
+   Besides, Ecto also maps primitive types to the appropriate database data types by the database adapters. Such as:
    + map =:string= to =:varchar=
    + map =:binary= to =:bytea=
    + ...
@@ -510,17 +494,6 @@ Hope you guys like it!
    #+begin_note
    Ecto defines the mapping at =ecto_sql= package. For PostgreSQL, the details can be found [[https://github.com/elixir-ecto/ecto_sql/blob/eda193965ef112cd0e8f584c58a2efa751655a3e/lib/ecto/adapters/postgres/connection.ex#L1181][here]].
    #+end_note
-
-   Besides, column types supported by database can be used directly in migration. Such as:
-   + ~:char~
-   + ~:varchar~
-   + ~:text~
-   + ...
-
-   And, column types with database-specific options can be used, too. Such as:
-   + ~:"int unsigned"~
-   + ~:"time without time zone"~
-   + ...
 
 ** Adding index
    Read more details at =h Ecto.Migration.index=.
@@ -586,6 +559,9 @@ Hope you guys like it!
     If the migration hasn't been commited to VCS, you are free to edit an existing one.
 
     If the migration has been committed and you are not the only one in the team, you'd better creating a new one.
+
+** Resources
+   + [[https://hashrocket.com/blog/posts/ecto-migrations-simple-to-complex][Ecto Migrations: Simple to Complex]]
 
 ** Last
    The database is ready, it's time to insert data into it.
@@ -1133,6 +1109,8 @@ Hope you guys like it!
 
 * =Ecto.Query=
   =Ecto.Query= provides DSL for querying. It makes querying simple and elegant.
+  + =Ecto.Query= provides all available keywords.
+  + =Ecto.Query.API= provides all available functions.
 
 ** Syntax
    There are two types of syntax when using =Ecto.Query=:
@@ -1194,7 +1172,7 @@ Hope you guys like it!
     #+end_src
 
 *** committing a query
-    Use =Repo.all= or =Repo.one= for committing a query:
+    Use =Repo.all=, =Repo.one= and so on for committing a query:
     #+begin_src elixir
     Repo.all(query)
     #+end_src
@@ -1275,8 +1253,6 @@ Hope you guys like it!
     But, when a query is large and contains joins across several tables, using positional bindings would make tracking bindings difficult. Therefore, named bindings is preferred.
 
 ** Query API
-   Query API provides functions can be used in a query.
-
    Read =h Ecto.Query.API= for a complete list of all available API.
 
 ** Raw SQL
