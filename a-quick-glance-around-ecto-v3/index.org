@@ -650,6 +650,10 @@ Hope you guys like it!
    #+end_note
 
 *** creating a context first
+    :PROPERTIES:
+    :CUSTOM_ID: creating-a-context
+    :END:
+
     A context is a concept introduced by Phoenix. It is a dedicated module that expose and group related functionality.
 
     Here, we will just create a context without talking much about it. If you are interested in the details of contexts, please read [[https://hexdocs.pm/phoenix/contexts.html][the official docs]].
@@ -997,7 +1001,7 @@ Hope you guys like it!
        |> validate_required([:name, :bio])
        |> validate_length(:name, min: 3, max: 50)
 
-     changset.valid? #=> false
+     changeset.valid? #=> false
      #+end_src
 
      When passing all the validations, =changeset.valid?= will be ~true~. Or, =changeset.valid?= will be ~false~, and the details of validation error can be found at =changeset.errors=.
@@ -1180,6 +1184,64 @@ Hope you guys like it!
 
 ** Last
    Read more details at =Ecto.Changeset=.
+
+* Filling the Context
+  We have created:
+  + [[#creating-a-context][an empty context]] when creating schemas.
+  + schemas
+  + changesets
+
+  It's time to put them together.
+
+  Edit =lib/paper/cms.ex=:
+  #+begin_src elixir
+  defmodule Paper.CMS do
+    @doc """
+    The CMS context.
+    """
+
+    alias Paper.Repo
+    alias Paper.CMS.Author
+    alias Paper.CMS.Post
+    alias Paper.CMS.Comment
+    alias Paper.CMS.Permalink
+    alias Paper.CMS.Tag
+
+    @doc false
+    def list_authors do
+      Repo.all(Author)
+    end
+
+    @doc false
+    def get_author!(id), do: Repo.get!(Author, id)
+
+    @doc false
+    def create_author(attrs \\ %{}) do
+      %Author{}
+      |> Author.changeset(attrs)
+      |> Repo.insert()
+    end
+
+    @doc false
+    def update_author(%Author{} = author, attrs) do
+      author
+      |> Author.changeset(attrs)
+      |> Repo.update()
+    end
+
+    @doc false
+    def delete_author(%Author{} = author) do
+      Repo.delete(author)
+    end
+
+    @doc false
+    def change_author(%Author{} = author, attrs \\ %{}) do
+      Author.changeset(author, attrs)
+    end
+
+    # Create rest functions for other schemas by youself.
+  end
+  #+end_src
 
 * =Ecto.Query=
   =Ecto.Query= provides DSL for querying. It makes querying simple and elegant.
