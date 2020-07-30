@@ -1548,12 +1548,12 @@ Hope you guys like it!
     |> Repo.insert!()
 
     # bulid a new child record with filling fields
-    Ecto.build_assoc(author, :posts, title: "Hello World!", body: "")
+    Ecto.build_assoc(author, :posts, %{title: "Hello World!", body: "..."})
     |> Repo.insert!()
 
     # bulid a new child record with filling fields by change()
     Ecto.build_assoc(author, :posts)
-    |> change(%{title: "Hello World", body: ""})
+    |> change(%{title: "Hello World", body: "..."})
     |> Repo.insert!()
     #+end_src
 
@@ -1561,7 +1561,7 @@ Hope you guys like it!
     #+begin_src elixir
     author = Repo.get_by(Author, name: "Spike")
 
-    %Post{title: "Hello world", body: ""}
+    %Post{title: "Hello world", body: "..."}
     |> change()
     |> put_assoc(:author, author)
     |> Repo.insert!()
@@ -1597,8 +1597,11 @@ Hope you guys like it!
      Repo.get_by(Author, name: "Spike")
      |> Repo.preload(:posts)
      |> change()
-     |> put_assoc(:posts, [%Post{title: "Software Design"}])
-     |> Repo.insert!()
+     |> put_assoc(:posts, [
+       %Post{title: "Software Design", body: "..."},
+       %Post{title: "Programming Ecto", body: "..."}
+     ])
+     |> Repo.update!()
      #+end_src
 
      Before making changes to existing associations, the association must be preloaded, just like above example code. But, if the parent record isn't inserted to database, preloading association can be ignored, such as:
@@ -1606,8 +1609,8 @@ Hope you guys like it!
      %Author{name: "Vicious"}
      |> change()
      |> put_assoc(:posts, [
-       %Post{title: "12 Principles"},
-       %Post{title: "Software Design"}
+       %Post{title: "12 Principles", body: "..."},
+       %Post{title: "Software Design", body: "..."}
      ])
      |> Repo.insert!()
      #+end_src
