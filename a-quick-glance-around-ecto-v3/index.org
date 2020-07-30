@@ -342,10 +342,12 @@ Hope you guys like it!
       def change do
         create table(:authors) do
           add :name, :varchar, null: false
-          add :bio, :text, null: false
+          add :bio, :text
 
           timestamps()
         end
+
+        create unique_index(:authors, [:name])
 
         create table(:posts) do
           add :author_id, references(:authors, on_delete: :nilify_all)
@@ -450,6 +452,8 @@ Hope you guys like it!
 
           timestamps()
         end
+
+        create unique_index(:tags, [:name])
 
         create table(:posts_tags, primary_key: false) do
           add :post_id, references(:posts, on_delete: :delete_all), null: false
@@ -879,7 +883,9 @@ Hope you guys like it!
    Next, we will introduce =Ecto.Changeset=.
 
 * =Ecto.Changeset=
-  =Ecto.Changeset= encapsulates the whole change policy, including allowed fields, detecting changes and validations. It helps us to make changes to database safely.
+  =Ecto.Changeset= encapsulates the whole change policy, including allowed fields, detecting changes and validations.
+
+  In short, it defines the updating policies which make sure the database is changed safely.
 
 ** About =%Ecto.Changeset{}=
    =%Ecto.Changeset{}= is the struct holding all the changes which will be performed to the database.
@@ -989,7 +995,7 @@ Hope you guys like it!
        %Author{}
        |> cast(params, [:name, :bio])
        |> validate_required([:name, :bio])
-       |> validate_length(:name, min: 3)
+       |> validate_length(:name, min: 3, max: 50)
 
      changset.valid? #=> false
      #+end_src
@@ -1087,8 +1093,90 @@ Hope you guys like it!
 *** rendering errors
     Ecto doesn't provide solutions for rendering =changeset.errors=. When you need to render them, consider using =Ecto.Changeset.traverse_errors=.
 
-** Send Changes to database
+** Sending Changes to database
    Last step, send =%Changeset{}= to database with functions provided by =Repo=, such as =Repo.insert=, =Repo.update=, etc.
+
+** Adding updating policies for schemas
+   We have known all the necessary things about =Ecto.Changeset=. It's time to write update policies for schemas.
+
+*** Adding updating policy for Author
+    Edit =lib/paper/cms/author.ex=:
+    #+begin_src elixir
+    import Ecto.Changeset
+    alias Paper.Repo
+
+    @doc false
+    def changeset(author, attrs) do
+      author
+      |> cast(attrs, [:name, :bio])
+      |> validate_required(:name)
+      |> validate_length(:name, min: 3, max: 50)
+      |> validate_length(:bio, max: 400)
+      |> unsafe_validate_unique(:name, Repo)
+      |> unique_constraint(:name)
+    end
+    #+end_src
+
+*** Adding updating policy for Post
+    Edit =lib/paper/cms/post.ex=:
+    #+begin_src elixir
+    import Ecto.Changeset
+
+    @doc false
+    def changeset(post, attrs) do
+      post
+      |> cast(attrs, [:title, :body])
+      |> validate_required([:title, :body])
+      |> validate_length(:title, min: 3, max: 50)
+    end
+    #+end_src
+
+*** Adding updating policy for Permalink
+    Edit =lib/paper/cms/permalink.ex=:
+    #+begin_src elixir
+    import Ecto.Changeset
+    alias Paper.Repo
+
+    @doc false
+    def changeset(permalink, attrs) do
+      permalink
+      |> cast(attrs, [:url])
+      |> validate_required(:url)
+      |> unsafe_validate_unique(:url, Repo)
+      |> unique_constraint(:url)
+    end
+    #+end_src
+
+*** Adding updating policy for Comment
+    Edit =lib/paper/cms/comment.ex=:
+    #+begin_src elixir
+    import Ecto.Changeset
+
+    @doc false
+    def changeset(comment, attrs) do
+      comment
+      |> cast(attrs, [:nickname, :email, :body])
+      |> validate_required([:nickname, :email, :body])
+      |> validate_length(:nickname, min: 3, max: 50)
+      |> validate_length(:email, max: 200)
+    end
+    #+end_src
+*** Adding updating policy for Tag
+    Edit =lib/paper/cms/tag.ex=:
+    #+begin_src elixir
+    import Ecto.Changeset
+    alias Paper.Repo
+
+    @doc false
+    def changeset(tag, attrs) do
+      tag
+      |> cast(attrs, [:name])
+      |> validate_required([:name])
+      |> validate_length(:name, min: 3, max: 50)
+      |> unsafe_validate_unique(:name, Repo)
+      |> unique_constraint(:name)
+    end
+    #+end_src
 
 ** Last
    Read more details at =Ecto.Changeset=.
