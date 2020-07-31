@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- 2020-07-31 Fri 00:34 -->
+<!-- 2020-07-31 Fri 12:31 -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>A Quick Glance Around Ecto v3 (ALPHA)</title>
@@ -29,7 +29,7 @@
 </head>
 <body>
 <div id="preamble" class="status">
-  2020-07-31 Fri 00:28
+  2020-07-31 Fri 11:34
 </div>
 <div id="content">
 <header>
@@ -38,125 +38,126 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#org5d2f680">1. Introduction</a></li>
-<li><a href="#org05294be">2. Prerequisites</a></li>
-<li><a href="#org4a6faf5">3. The Conventions</a>
+<li><a href="#org6f2409b">1. Introduction</a></li>
+<li><a href="#org70afa96">2. Prerequisites</a></li>
+<li><a href="#org1285ac6">3. The Conventions</a>
 <ul>
-<li><a href="#orga0eb674">3.1. Plain English</a></li>
-<li><a href="#orgb860466">3.2. The types of annotations</a></li>
-<li><a href="#org51b7a31">3.3. Notation of shell commands</a></li>
-<li><a href="#orga60560a">3.4. Reading official documents</a></li>
+<li><a href="#org75870bb">3.1. Plain English</a></li>
+<li><a href="#org8f1dfa5">3.2. The types of annotations</a></li>
+<li><a href="#org3c20843">3.3. Notation of shell commands</a></li>
+<li><a href="#org36da0cb">3.4. Reading official documents</a></li>
 </ul>
 </li>
-<li><a href="#orgf89d453">4. Setup Environments</a></li>
-<li><a href="#orgbfa6be1">5. Sample Application</a>
+<li><a href="#org7e40774">4. Setup Environments</a></li>
+<li><a href="#org9698bac">5. Sample Application</a>
 <ul>
-<li><a href="#orgfa8c438">5.1. Creating a mix project</a></li>
-<li><a href="#org677d655">5.2. Adding dependencies</a></li>
-<li><a href="#org30d795a">5.3. Setting up a Repo</a></li>
-<li><a href="#orge9f4122">5.4. Creating database</a></li>
-<li><a href="#orgeb58dfa">5.5. (optional) Updating configurations for <code>mix format</code></a></li>
-<li><a href="#org2ba0329">5.6. Last</a></li>
+<li><a href="#org2c3dcde">5.1. Creating a mix project</a></li>
+<li><a href="#org2dc9041">5.2. Adding dependencies</a></li>
+<li><a href="#orgde0006c">5.3. Setting up a Repo</a></li>
+<li><a href="#org1241c0a">5.4. Creating database</a></li>
+<li><a href="#org709a1cd">5.5. (optional) Updating configurations for <code>mix format</code></a></li>
+<li><a href="#org6d47c9d">5.6. Last</a></li>
 </ul>
 </li>
 <li><a href="#sample-data-model">6. Sample Data Model</a></li>
-<li><a href="#org5f15e41">7. The Structure Of Ecto</a></li>
-<li><a href="#orgeba091a">8. <code>Ecto.Migration</code></a>
+<li><a href="#orgbf263cd">7. The Structure Of Ecto</a></li>
+<li><a href="#orgaab2a9a">8. <code>Ecto.Migration</code></a>
 <ul>
-<li><a href="#orgc919e76">8.1. What is a migration?</a></li>
+<li><a href="#orge6002bc">8.1. What is a migration?</a></li>
 <li><a href="#creating-migrations">8.2. Creating migrations</a></li>
-<li><a href="#org9a40175">8.3. Applying migrations</a></li>
-<li><a href="#org00c1b6d">8.4. Rolling back migrations</a></li>
-<li><a href="#org04bc24b">8.5. Available column types</a></li>
-<li><a href="#orga38da05">8.6. Adding index</a></li>
+<li><a href="#org4e888fd">8.3. Applying migrations</a></li>
+<li><a href="#orgf3bdf7f">8.4. Rolling back migrations</a></li>
+<li><a href="#org4df6aab">8.5. Available column types</a></li>
+<li><a href="#orga23751e">8.6. Adding index</a></li>
 <li><a href="#the-options-of-references">8.7. The options of <code>references</code></a></li>
-<li><a href="#org2c09be2">8.8. Practices</a></li>
-<li><a href="#orgf6e9abd">8.9. Resources</a></li>
-<li><a href="#org80916d8">8.10. Last</a></li>
+<li><a href="#org314b12c">8.8. Practices</a></li>
+<li><a href="#org1a351dc">8.9. Resources</a></li>
+<li><a href="#orgb5352a0">8.10. Last</a></li>
 </ul>
 </li>
-<li><a href="#orga19868e">9. <code>Ecto.Repo</code></a>
+<li><a href="#org4c2d1d4">9. <code>Ecto.Repo</code></a>
 <ul>
-<li><a href="#org76c980c">9.1. The Repository Pattern</a></li>
-<li><a href="#org45ed383">9.2. Repository in Ecto</a></li>
-<li><a href="#orgb26deb9">9.3. Low level API for CRUD</a></li>
-<li><a href="#orge860a45">9.4. Extending Repo</a></li>
-<li><a href="#org9ef72b8">9.5. Last</a></li>
+<li><a href="#org70f3beb">9.1. The Repository Pattern</a></li>
+<li><a href="#org715cc8d">9.2. Repository in Ecto</a></li>
+<li><a href="#org6d56c46">9.3. Low level API for CRUD</a></li>
+<li><a href="#org714a0f8">9.4. Extending Repo</a></li>
+<li><a href="#orgc05fc8f">9.5. Last</a></li>
 </ul>
 </li>
-<li><a href="#org3a628c7">10. <code>Ecto.Schema</code></a>
+<li><a href="#org24d0bea">10. <code>Ecto.Schema</code></a>
 <ul>
-<li><a href="#orgd0b057b">10.1. Creating schemas</a></li>
-<li><a href="#org7b052cd">10.2. Starting IEx</a></li>
-<li><a href="#orgfce6c3a">10.3. CRUD</a></li>
-<li><a href="#orgb4b0ad9">10.4. Last</a></li>
+<li><a href="#org87065fe">10.1. Creating schemas</a></li>
+<li><a href="#org3a4477b">10.2. Starting IEx</a></li>
+<li><a href="#org29dca65">10.3. CRUD</a></li>
+<li><a href="#org866ea24">10.4. Last</a></li>
 </ul>
 </li>
-<li><a href="#orga8b3363">11. <code>Ecto.Changeset</code></a>
+<li><a href="#org8f77748">11. <code>Ecto.Changeset</code></a>
 <ul>
-<li><a href="#org6737d18">11.1. About <code>%Ecto.Changeset{}</code></a></li>
-<li><a href="#orgfcf88dd">11.2. Basics</a></li>
-<li><a href="#org18ffb39">11.3. Casting and Filtering</a></li>
-<li><a href="#org212dea8">11.4. Validating</a></li>
-<li><a href="#org84fe36d">11.5. Sending Changes to database</a></li>
-<li><a href="#org59e80ed">11.6. Adding updating policies for schemas</a></li>
-<li><a href="#orgebb6cc4">11.7. Last</a></li>
+<li><a href="#org6a7a2ec">11.1. About <code>%Ecto.Changeset{}</code></a></li>
+<li><a href="#orgb157da2">11.2. Basics</a></li>
+<li><a href="#orgc1d673d">11.3. Casting and Filtering</a></li>
+<li><a href="#org5d9748f">11.4. Validating</a></li>
+<li><a href="#org587d82b">11.5. Sending Changes to database</a></li>
+<li><a href="#org9ae7260">11.6. Adding updating policies for schemas</a></li>
+<li><a href="#org34d2142">11.7. Last</a></li>
 </ul>
 </li>
-<li><a href="#orge92d3ab">12. Filling the Context</a></li>
-<li><a href="#org3887e8a">13. <code>Ecto.Query</code></a>
+<li><a href="#orgf17d25b">12. Filling the Context</a></li>
+<li><a href="#orgf506ecd">13. <code>Ecto.Query</code></a>
 <ul>
-<li><a href="#org35a8a2c">13.1. Syntax</a></li>
-<li><a href="#org09bd368">13.2. Basic usage</a></li>
-<li><a href="#org2c2203a">13.3. Debugging</a></li>
-<li><a href="#org2473123">13.4. Dynamic values</a></li>
-<li><a href="#org77e86ff">13.5. Query bindings</a></li>
-<li><a href="#orgff7273f">13.6. Query API</a></li>
-<li><a href="#org5e228ed">13.7. Raw SQL</a></li>
-<li><a href="#orgd2169bb">13.8. Filtering with <code>where</code></a></li>
-<li><a href="#orgfad3416">13.9. Combining results with unions</a></li>
-<li><a href="#org0ca3a26">13.10. Ordering with <code>order_by</code></a></li>
-<li><a href="#org17194c9">13.11. Grouping with <code>group_by</code></a></li>
-<li><a href="#org0e500ea">13.12. Joins</a></li>
-<li><a href="#org1a2b7dc">13.13. Composable Queries</a></li>
-<li><a href="#orgfcbc20d">13.14. Using a schema</a></li>
-<li><a href="#orgac0607f">13.15. Tips</a></li>
-<li><a href="#org528614e">13.16. Last</a></li>
+<li><a href="#orgfaa3f7b">13.1. Syntax</a></li>
+<li><a href="#org7280382">13.2. Basic usage</a></li>
+<li><a href="#org0926434">13.3. Debugging</a></li>
+<li><a href="#org82df2fa">13.4. Dynamic values</a></li>
+<li><a href="#org20d61ec">13.5. Query bindings</a></li>
+<li><a href="#orga39c722">13.6. Query API</a></li>
+<li><a href="#orgfd7bcb6">13.7. Raw SQL</a></li>
+<li><a href="#org1cf57ff">13.8. Filtering with <code>where</code></a></li>
+<li><a href="#org5c30687">13.9. Combining results with unions</a></li>
+<li><a href="#org5e9e37a">13.10. Ordering with <code>order_by</code></a></li>
+<li><a href="#orgf288060">13.11. Grouping with <code>group_by</code></a></li>
+<li><a href="#org1248e25">13.12. Joins</a></li>
+<li><a href="#orgf1d1759">13.13. Composable Queries</a></li>
+<li><a href="#orge0fffca">13.14. Using a schema</a></li>
+<li><a href="#org6b8c3ae">13.15. Tips</a></li>
+<li><a href="#org808d21f">13.16. Last</a></li>
 </ul>
 </li>
-<li><a href="#org9af2cbb">14. Associations</a>
+<li><a href="#orgfc3a196">14. Associations</a>
 <ul>
-<li><a href="#orgc07fcea">14.1. Insert / Update</a></li>
-<li><a href="#orged55a12">14.2. Query</a></li>
-<li><a href="#org23caa8e">14.3. Delete</a></li>
+<li><a href="#org09de378">14.1. Insert / Update</a></li>
+<li><a href="#orgbccae6b">14.2. Query</a></li>
+<li><a href="#org9229a8a">14.3. Delete</a></li>
 </ul>
 </li>
-<li><a href="#orgcd5fce3">15. Transactions</a>
+<li><a href="#orgb63e91e">15. Transactions</a>
 <ul>
-<li><a href="#org68ebeeb">15.1. with a function</a></li>
-<li><a href="#orga5871be">15.2. with <code>Ecto.Multi</code></a></li>
-<li><a href="#orgdd7f8d4">15.3. which one should I use?</a></li>
-<li><a href="#orgbdc2131">15.4. executing non-database operations</a></li>
-<li><a href="#org1ffb11a">15.5. introspecting <code>Ecto.Multi</code></a></li>
+<li><a href="#orga1c6035">15.1. with a function</a></li>
+<li><a href="#org3317a6e">15.2. with <code>Ecto.Multi</code></a></li>
+<li><a href="#orgac560b6">15.3. which one should I use?</a></li>
+<li><a href="#orgb2a2fd2">15.4. executing non-database operations</a></li>
+<li><a href="#org84bc556">15.5. introspecting <code>Ecto.Multi</code></a></li>
 </ul>
 </li>
-<li><a href="#orgae61212">16. Seeding</a>
+<li><a href="#orgb01c43f">16. Seeding</a>
 <ul>
-<li><a href="#org50c567e">16.1. Handling uniqueness</a></li>
-<li><a href="#org55cdb11">16.2. Populate data with Schema</a></li>
+<li><a href="#org34b7e1b">16.1. Handling uniqueness</a></li>
+<li><a href="#org0e4a38d">16.2. Populate data with Schema</a></li>
 </ul>
 </li>
-<li><a href="#orge403c31">17. Appendix</a>
+<li><a href="#org2e29e35">17. Appendix</a>
 <ul>
-<li><a href="#org936218f">17.1. Naming conventions</a></li>
-<li><a href="#orgb2da3bf">17.2. Related Mix tasks</a></li>
-<li><a href="#org4b270e4">17.3. Schema related tips</a></li>
-<li><a href="#orgdb2f7ae">17.4. Setting default value for fields?</a></li>
-<li><a href="#orgd6a689d">17.5. Commonly used constraints</a></li>
-<li><a href="#org5c8940e">17.6. Don't use constraints all the time</a></li>
+<li><a href="#org4494243">17.1. Naming conventions</a></li>
+<li><a href="#org2963cbc">17.2. Related Mix tasks</a></li>
+<li><a href="#org395101b">17.3. Schema related tips</a></li>
+<li><a href="#org71dc009">17.4. About timestamps</a></li>
+<li><a href="#org3e5eb61">17.5. Setting default value for fields?</a></li>
+<li><a href="#orgccadb99">17.6. Commonly used constraints</a></li>
+<li><a href="#orgdc5970c">17.7. Don't use constraints all the time</a></li>
 </ul>
 </li>
-<li><a href="#org8e6b994">18. License</a></li>
+<li><a href="#org8f9775f">18. License</a></li>
 </ul>
 </div>
 </nav>
@@ -174,8 +175,8 @@ Hope you guys like it!
 
 <button class="toc-trigger">TOC</button>
 
-<div id="outline-container-org5d2f680" class="outline-2">
-<h2 id="org5d2f680"><span class="section-number-2">1</span> <a href="#org5d2f680">Introduction</a></h2>
+<div id="outline-container-org6f2409b" class="outline-2">
+<h2 id="org6f2409b"><span class="section-number-2">1</span> <a href="#org6f2409b">Introduction</a></h2>
 <div class="outline-text-2" id="text-1">
 <p>
 This book will act as a map of large numbers of docs, and guide you to glance over the main features of Ecto v3 by trying to construct the database layer of a blogging system.
@@ -198,8 +199,8 @@ A blogging system is the system that everybody knows. Readers don't have to spen
 </div>
 </div>
 
-<div id="outline-container-org05294be" class="outline-2">
-<h2 id="org05294be"><span class="section-number-2">2</span> <a href="#org05294be">Prerequisites</a></h2>
+<div id="outline-container-org70afa96" class="outline-2">
+<h2 id="org70afa96"><span class="section-number-2">2</span> <a href="#org70afa96">Prerequisites</a></h2>
 <div class="outline-text-2" id="text-2">
 <p>
 Before reading this book, you should know how to write basic Elixir. That's all.
@@ -207,16 +208,16 @@ Before reading this book, you should know how to write basic Elixir. That's all.
 </div>
 </div>
 
-<div id="outline-container-org4a6faf5" class="outline-2">
-<h2 id="org4a6faf5"><span class="section-number-2">3</span> <a href="#org4a6faf5">The Conventions</a></h2>
+<div id="outline-container-org1285ac6" class="outline-2">
+<h2 id="org1285ac6"><span class="section-number-2">3</span> <a href="#org1285ac6">The Conventions</a></h2>
 <div class="outline-text-2" id="text-3">
 <p>
 Conventions reduce the effort needed to read and understand.
 </p>
 </div>
 
-<div id="outline-container-orga0eb674" class="outline-3">
-<h3 id="orga0eb674"><span class="section-number-3">3.1</span> <a href="#orga0eb674">Plain English</a></h3>
+<div id="outline-container-org75870bb" class="outline-3">
+<h3 id="org75870bb"><span class="section-number-3">3.1</span> <a href="#org75870bb">Plain English</a></h3>
 <div class="outline-text-3" id="text-3-1">
 <p>
 In order to help people as much as possible, I am trying to write this book in 7th-grade plain English.
@@ -230,8 +231,8 @@ English isn't my mother language. When you find any error, it would be nice if y
 </div>
 </div>
 
-<div id="outline-container-orgb860466" class="outline-3">
-<h3 id="orgb860466"><span class="section-number-3">3.2</span> <a href="#orgb860466">The types of annotations</a></h3>
+<div id="outline-container-org8f1dfa5" class="outline-3">
+<h3 id="org8f1dfa5"><span class="section-number-3">3.2</span> <a href="#org8f1dfa5">The types of annotations</a></h3>
 <div class="outline-text-3" id="text-3-2">
 <div class="question">
 <p>
@@ -261,8 +262,8 @@ This is a warning.
 </div>
 </div>
 </div>
-<div id="outline-container-org51b7a31" class="outline-3">
-<h3 id="org51b7a31"><span class="section-number-3">3.3</span> <a href="#org51b7a31">Notation of shell commands</a></h3>
+<div id="outline-container-org3c20843" class="outline-3">
+<h3 id="org3c20843"><span class="section-number-3">3.3</span> <a href="#org3c20843">Notation of shell commands</a></h3>
 <div class="outline-text-3" id="text-3-3">
 <p>
 The shell commands is prefixed by <code>$</code> which is the default prompt for ordinary UNIX users.
@@ -278,8 +279,8 @@ For example:
 </div>
 </div>
 
-<div id="outline-container-orga60560a" class="outline-3">
-<h3 id="orga60560a"><span class="section-number-3">3.4</span> <a href="#orga60560a">Reading official documents</a></h3>
+<div id="outline-container-org36da0cb" class="outline-3">
+<h3 id="org36da0cb"><span class="section-number-3">3.4</span> <a href="#org36da0cb">Reading official documents</a></h3>
 <div class="outline-text-3" id="text-3-4">
 <p>
 When something has been explained in official documents, it won't be described again. I will guide you to read the related documents.
@@ -296,8 +297,8 @@ For example, when you see something like <i>please read <code>h Ecto.Schema</cod
 </div>
 </div>
 
-<div id="outline-container-orgf89d453" class="outline-2">
-<h2 id="orgf89d453"><span class="section-number-2">4</span> <a href="#orgf89d453">Setup Environments</a></h2>
+<div id="outline-container-org7e40774" class="outline-2">
+<h2 id="org7e40774"><span class="section-number-2">4</span> <a href="#org7e40774">Setup Environments</a></h2>
 <div class="outline-text-2" id="text-4">
 <p>
 Before moving on, we should ensure that fundamental environments are configured:
@@ -313,16 +314,16 @@ There are lots of online tutorials about setting up environments, we won't descr
 </div>
 </div>
 
-<div id="outline-container-orgbfa6be1" class="outline-2">
-<h2 id="orgbfa6be1"><span class="section-number-2">5</span> <a href="#orgbfa6be1">Sample Application</a></h2>
+<div id="outline-container-org9698bac" class="outline-2">
+<h2 id="org9698bac"><span class="section-number-2">5</span> <a href="#org9698bac">Sample Application</a></h2>
 <div class="outline-text-2" id="text-5">
 <p>
 Ecto is an Elixir library, it should be used in an Elixir project. Therefore, we should create a project before playing with Ecto.
 </p>
 </div>
 
-<div id="outline-container-orgfa8c438" class="outline-3">
-<h3 id="orgfa8c438"><span class="section-number-3">5.1</span> <a href="#orgfa8c438">Creating a mix project</a></h3>
+<div id="outline-container-org2c3dcde" class="outline-3">
+<h3 id="org2c3dcde"><span class="section-number-3">5.1</span> <a href="#org2c3dcde">Creating a mix project</a></h3>
 <div class="outline-text-3" id="text-5-1">
 <p>
 Create a project called <code>paper</code>:
@@ -345,8 +346,8 @@ It's OK to run <code>mix new</code> without <code>--sup</code> option. But, you 
 </div>
 </div>
 
-<div id="outline-container-org677d655" class="outline-3">
-<h3 id="org677d655"><span class="section-number-3">5.2</span> <a href="#org677d655">Adding dependencies</a></h3>
+<div id="outline-container-org2dc9041" class="outline-3">
+<h3 id="org2dc9041"><span class="section-number-3">5.2</span> <a href="#org2dc9041">Adding dependencies</a></h3>
 <div class="outline-text-3" id="text-5-2">
 <p>
 Two packages are required:
@@ -379,12 +380,12 @@ Fetch dependencies:
 </div>
 </div>
 
-<div id="outline-container-org30d795a" class="outline-3">
-<h3 id="org30d795a"><span class="section-number-3">5.3</span> <a href="#org30d795a">Setting up a Repo</a></h3>
+<div id="outline-container-orgde0006c" class="outline-3">
+<h3 id="orgde0006c"><span class="section-number-3">5.3</span> <a href="#orgde0006c">Setting up a Repo</a></h3>
 <div class="outline-text-3" id="text-5-3">
 </div>
-<div id="outline-container-org11b091a" class="outline-4">
-<h4 id="org11b091a"><span class="section-number-4">5.3.1</span> <a href="#org11b091a">running a Mix task</a></h4>
+<div id="outline-container-org7612f0e" class="outline-4">
+<h4 id="org7612f0e"><span class="section-number-4">5.3.1</span> <a href="#org7612f0e">running a Mix task</a></h4>
 <div class="outline-text-4" id="text-5-3-1">
 <blockquote>
 <p>
@@ -445,8 +446,8 @@ About the options:
 </div>
 </div>
 
-<div id="outline-container-orgef903e0" class="outline-4">
-<h4 id="orgef903e0"><span class="section-number-4">5.3.2</span> <a href="#orgef903e0">adding rest configurations</a></h4>
+<div id="outline-container-orgab971c5" class="outline-4">
+<h4 id="orgab971c5"><span class="section-number-4">5.3.2</span> <a href="#orgab971c5">adding rest configurations</a></h4>
 <div class="outline-text-4" id="text-5-3-2">
 <p>
 Edit <code>lib/paper/application.ex</code> for adding Repo to supervision tree:
@@ -476,8 +477,8 @@ Edit <code>config/config.exs</code> for making Ecto related Mix tasks work as ex
 </div>
 </div>
 
-<div id="outline-container-orge9f4122" class="outline-3">
-<h3 id="orge9f4122"><span class="section-number-3">5.4</span> <a href="#orge9f4122">Creating database</a></h3>
+<div id="outline-container-org1241c0a" class="outline-3">
+<h3 id="org1241c0a"><span class="section-number-3">5.4</span> <a href="#org1241c0a">Creating database</a></h3>
 <div class="outline-text-3" id="text-5-4">
 <div class="org-src-container">
 <pre class="src src-sh">$ mix ecto.create
@@ -487,8 +488,8 @@ The database for Paper.Repo has been created
 </div>
 </div>
 
-<div id="outline-container-orgeb58dfa" class="outline-3">
-<h3 id="orgeb58dfa"><span class="section-number-3">5.5</span> <a href="#orgeb58dfa">(optional) Updating configurations for <code>mix format</code></a></h3>
+<div id="outline-container-org709a1cd" class="outline-3">
+<h3 id="org709a1cd"><span class="section-number-3">5.5</span> <a href="#org709a1cd">(optional) Updating configurations for <code>mix format</code></a></h3>
 <div class="outline-text-3" id="text-5-5">
 <p>
 Ecto has additional formatting rules. In order to apply these rules, following content should be added.
@@ -520,8 +521,8 @@ Edit <code>priv/repo/migrations/.formatter.exs</code> for formatting migrations:
 </div>
 </div>
 
-<div id="outline-container-org2ba0329" class="outline-3">
-<h3 id="org2ba0329"><span class="section-number-3">5.6</span> <a href="#org2ba0329">Last</a></h3>
+<div id="outline-container-org6d47c9d" class="outline-3">
+<h3 id="org6d47c9d"><span class="section-number-3">5.6</span> <a href="#org6d47c9d">Last</a></h3>
 <div class="outline-text-3" id="text-5-6">
 <p>
 Now, Ecto is ready to communicate with the database.
@@ -530,7 +531,7 @@ Now, Ecto is ready to communicate with the database.
 </div>
 </div>
 
-<div id="outline-container-org9bb8016" class="outline-2">
+<div id="outline-container-org8315b5e" class="outline-2">
 <h2 id="sample-data-model"><span class="section-number-2">6</span> <a href="#sample-data-model">Sample Data Model</a></h2>
 <div class="outline-text-2" id="text-sample-data-model">
 <p>
@@ -567,8 +568,8 @@ The one-to-one relationship between posts and permalinks isn't necessary for mos
 </div>
 </div>
 
-<div id="outline-container-org5f15e41" class="outline-2">
-<h2 id="org5f15e41"><span class="section-number-2">7</span> <a href="#org5f15e41">The Structure Of Ecto</a></h2>
+<div id="outline-container-orgbf263cd" class="outline-2">
+<h2 id="orgbf263cd"><span class="section-number-2">7</span> <a href="#orgbf263cd">The Structure Of Ecto</a></h2>
 <div class="outline-text-2" id="text-7">
 <blockquote>
 <p>
@@ -631,16 +632,16 @@ We have already known the structure of Ecto. Next, we will introduce them separa
 </div>
 </div>
 
-<div id="outline-container-orgeba091a" class="outline-2">
-<h2 id="orgeba091a"><span class="section-number-2">8</span> <a href="#orgeba091a"><code>Ecto.Migration</code></a></h2>
+<div id="outline-container-orgaab2a9a" class="outline-2">
+<h2 id="orgaab2a9a"><span class="section-number-2">8</span> <a href="#orgaab2a9a"><code>Ecto.Migration</code></a></h2>
 <div class="outline-text-2" id="text-8">
 <p>
 <code>Ecto.Migration</code> helps developers to track database changes in a clean way.
 </p>
 </div>
 
-<div id="outline-container-orgc919e76" class="outline-3">
-<h3 id="orgc919e76"><span class="section-number-3">8.1</span> <a href="#orgc919e76">What is a migration?</a></h3>
+<div id="outline-container-orge6002bc" class="outline-3">
+<h3 id="orge6002bc"><span class="section-number-3">8.1</span> <a href="#orge6002bc">What is a migration?</a></h3>
 <div class="outline-text-3" id="text-8-1">
 <p>
 A migration is a file includes a set of instructions which changes database structure.
@@ -648,7 +649,7 @@ A migration is a file includes a set of instructions which changes database stru
 </div>
 </div>
 
-<div id="outline-container-org7e0d5b1" class="outline-3">
+<div id="outline-container-orgb97df08" class="outline-3">
 <h3 id="creating-migrations"><span class="section-number-3">8.2</span> <a href="#creating-migrations">Creating migrations</a></h3>
 <div class="outline-text-3" id="text-creating-migrations">
 <p>
@@ -701,8 +702,8 @@ When creating a migration, we generally define following things:
 </div>
 </div>
 
-<div id="outline-container-org01ef6ff" class="outline-4">
-<h4 id="org01ef6ff"><span class="section-number-4">8.2.1</span> <a href="#org01ef6ff">build relation ship between authors and posts (1-N)</a></h4>
+<div id="outline-container-orga5fbb0c" class="outline-4">
+<h4 id="orga5fbb0c"><span class="section-number-4">8.2.1</span> <a href="#orga5fbb0c">build relation ship between authors and posts (1-N)</a></h4>
 <div class="outline-text-4" id="text-8-2-1">
 <p>
 As we said above:
@@ -759,8 +760,8 @@ Apply the new migration:
 </div>
 </div>
 
-<div id="outline-container-orgb65e924" class="outline-4">
-<h4 id="orgb65e924"><span class="section-number-4">8.2.2</span> <a href="#orgb65e924">build relationship between posts and permalinks (1-1)</a></h4>
+<div id="outline-container-org91e0ad8" class="outline-4">
+<h4 id="org91e0ad8"><span class="section-number-4">8.2.2</span> <a href="#org91e0ad8">build relationship between posts and permalinks (1-1)</a></h4>
 <div class="outline-text-4" id="text-8-2-2">
 <p>
 As we said above:
@@ -809,8 +810,8 @@ Apply the new migration:
 </div>
 </div>
 
-<div id="outline-container-orgefecfb8" class="outline-4">
-<h4 id="orgefecfb8"><span class="section-number-4">8.2.3</span> <a href="#orgefecfb8">build relationship between posts and comments (1-N)</a></h4>
+<div id="outline-container-orgb7c3f5e" class="outline-4">
+<h4 id="orgb7c3f5e"><span class="section-number-4">8.2.3</span> <a href="#orgb7c3f5e">build relationship between posts and comments (1-N)</a></h4>
 <div class="outline-text-4" id="text-8-2-3">
 <p>
 As we said above:
@@ -859,8 +860,8 @@ Apply the new migration:
 </div>
 </div>
 
-<div id="outline-container-org6234c21" class="outline-4">
-<h4 id="org6234c21"><span class="section-number-4">8.2.4</span> <a href="#org6234c21">build relationship between posts and tags (N-N)</a></h4>
+<div id="outline-container-org51cc3be" class="outline-4">
+<h4 id="org51cc3be"><span class="section-number-4">8.2.4</span> <a href="#org51cc3be">build relationship between posts and tags (N-N)</a></h4>
 <div class="outline-text-4" id="text-8-2-4">
 <p>
 As we said above:
@@ -918,8 +919,8 @@ Apply the new migration:
 </div>
 </div>
 
-<div id="outline-container-org9a40175" class="outline-3">
-<h3 id="org9a40175"><span class="section-number-3">8.3</span> <a href="#org9a40175">Applying migrations</a></h3>
+<div id="outline-container-org4e888fd" class="outline-3">
+<h3 id="org4e888fd"><span class="section-number-3">8.3</span> <a href="#org4e888fd">Applying migrations</a></h3>
 <div class="outline-text-3" id="text-8-3">
 <p>
 We have introduced how to apply migration in above sections. Read more details at:
@@ -931,8 +932,8 @@ We have introduced how to apply migration in above sections. Read more details a
 </div>
 </div>
 
-<div id="outline-container-org00c1b6d" class="outline-3">
-<h3 id="org00c1b6d"><span class="section-number-3">8.4</span> <a href="#org00c1b6d">Rolling back migrations</a></h3>
+<div id="outline-container-orgf3bdf7f" class="outline-3">
+<h3 id="orgf3bdf7f"><span class="section-number-3">8.4</span> <a href="#orgf3bdf7f">Rolling back migrations</a></h3>
 <div class="outline-text-3" id="text-8-4">
 <p>
 Read more details at:
@@ -944,8 +945,8 @@ Read more details at:
 </div>
 </div>
 
-<div id="outline-container-org04bc24b" class="outline-3">
-<h3 id="org04bc24b"><span class="section-number-3">8.5</span> <a href="#org04bc24b">Available column types</a></h3>
+<div id="outline-container-org4df6aab" class="outline-3">
+<h3 id="org4df6aab"><span class="section-number-3">8.5</span> <a href="#org4df6aab">Available column types</a></h3>
 <div class="outline-text-3" id="text-8-5">
 <p>
 When <a href="#creating-migrations">creating migrations</a>, we have specified some column types, such as <code>:varchar</code> or <code>:text</code>. These data types supported by database can be used directly in migrations. And, data types with database-specific options can be used, too. Such as:
@@ -974,8 +975,8 @@ Ecto defines the mapping at <code>ecto_sql</code> package. For PostgreSQL, the d
 </div>
 </div>
 
-<div id="outline-container-orga38da05" class="outline-3">
-<h3 id="orga38da05"><span class="section-number-3">8.6</span> <a href="#orga38da05">Adding index</a></h3>
+<div id="outline-container-orga23751e" class="outline-3">
+<h3 id="orga23751e"><span class="section-number-3">8.6</span> <a href="#orga23751e">Adding index</a></h3>
 <div class="outline-text-3" id="text-8-6">
 <p>
 Read more details at <code>h Ecto.Migration.index</code>.
@@ -983,7 +984,7 @@ Read more details at <code>h Ecto.Migration.index</code>.
 </div>
 </div>
 
-<div id="outline-container-orgc1c86dd" class="outline-3">
+<div id="outline-container-orgb63d22a" class="outline-3">
 <h3 id="the-options-of-references"><span class="section-number-3">8.7</span> <a href="#the-options-of-references">The options of <code>references</code></a></h3>
 <div class="outline-text-3" id="text-the-options-of-references">
 <p>
@@ -995,8 +996,8 @@ The official docs don't talk much about them. But, we can know the details by re
 </p>
 </div>
 
-<div id="outline-container-org16de5dc" class="outline-4">
-<h4 id="org16de5dc"><span class="section-number-4">8.7.1</span> <a href="#org16de5dc">the <code>:on_delete</code> option</a></h4>
+<div id="outline-container-org1bc7a4b" class="outline-4">
+<h4 id="org1bc7a4b"><span class="section-number-4">8.7.1</span> <a href="#org1bc7a4b">the <code>:on_delete</code> option</a></h4>
 <div class="outline-text-4" id="text-8-7-1">
 <p>
 The <code>:on_delete</code> option specifies the behavior of referencing rows when a referenced row is deleted. Following is the available values.
@@ -1026,8 +1027,8 @@ The <code>:on_delete</code> option specifies the behavior of referencing rows wh
 </div>
 </div>
 
-<div id="outline-container-org58042b5" class="outline-4">
-<h4 id="org58042b5"><span class="section-number-4">8.7.2</span> <a href="#org58042b5">the <code>:on_update</code> option</a></h4>
+<div id="outline-container-orgfc9fce3" class="outline-4">
+<h4 id="orgfc9fce3"><span class="section-number-4">8.7.2</span> <a href="#orgfc9fce3">the <code>:on_update</code> option</a></h4>
 <div class="outline-text-4" id="text-8-7-2">
 <div class="note">
 <p>
@@ -1065,12 +1066,12 @@ The <code>:on_update</code> option specifies the behavior of referencing rows wh
 </div>
 </div>
 
-<div id="outline-container-org2c09be2" class="outline-3">
-<h3 id="org2c09be2"><span class="section-number-3">8.8</span> <a href="#org2c09be2">Practices</a></h3>
+<div id="outline-container-org314b12c" class="outline-3">
+<h3 id="org314b12c"><span class="section-number-3">8.8</span> <a href="#org314b12c">Practices</a></h3>
 <div class="outline-text-3" id="text-8-8">
 </div>
-<div id="outline-container-orgc666978" class="outline-4">
-<h4 id="orgc666978"><span class="section-number-4">8.8.1</span> <a href="#orgc666978">ensure migrations can be rolled back</a></h4>
+<div id="outline-container-org64f8aa7" class="outline-4">
+<h4 id="org64f8aa7"><span class="section-number-4">8.8.1</span> <a href="#org64f8aa7">ensure migrations can be rolled back</a></h4>
 <div class="outline-text-4" id="text-8-8-1">
 <p>
 When adding a new migration, we should ensure that we can roll them back.
@@ -1082,8 +1083,8 @@ Generally, Ecto can infer the rollback behavior of <code>change/0</code> functio
 </div>
 </div>
 
-<div id="outline-container-orgb1a7c02" class="outline-4">
-<h4 id="orgb1a7c02"><span class="section-number-4">8.8.2</span> <a href="#orgb1a7c02">should I editing an existing migration?</a></h4>
+<div id="outline-container-org1d656f3" class="outline-4">
+<h4 id="org1d656f3"><span class="section-number-4">8.8.2</span> <a href="#org1d656f3">should I editing an existing migration?</a></h4>
 <div class="outline-text-4" id="text-8-8-2">
 <p>
 If the migration hasn't been commited to VCS, you are free to edit an existing one.
@@ -1096,8 +1097,8 @@ If the migration has been committed and you are not the only one in the team, yo
 </div>
 </div>
 
-<div id="outline-container-orgf6e9abd" class="outline-3">
-<h3 id="orgf6e9abd"><span class="section-number-3">8.9</span> <a href="#orgf6e9abd">Resources</a></h3>
+<div id="outline-container-org1a351dc" class="outline-3">
+<h3 id="org1a351dc"><span class="section-number-3">8.9</span> <a href="#org1a351dc">Resources</a></h3>
 <div class="outline-text-3" id="text-8-9">
 <ul class="org-ul">
 <li><a href="https://hashrocket.com/blog/posts/ecto-migrations-simple-to-complex">Ecto Migrations: Simple to Complex</a></li>
@@ -1105,8 +1106,8 @@ If the migration has been committed and you are not the only one in the team, yo
 </div>
 </div>
 
-<div id="outline-container-org80916d8" class="outline-3">
-<h3 id="org80916d8"><span class="section-number-3">8.10</span> <a href="#org80916d8">Last</a></h3>
+<div id="outline-container-orgb5352a0" class="outline-3">
+<h3 id="orgb5352a0"><span class="section-number-3">8.10</span> <a href="#orgb5352a0">Last</a></h3>
 <div class="outline-text-3" id="text-8-10">
 <p>
 The database is ready, it's time to insert data into it.
@@ -1115,16 +1116,16 @@ The database is ready, it's time to insert data into it.
 </div>
 </div>
 
-<div id="outline-container-orga19868e" class="outline-2">
-<h2 id="orga19868e"><span class="section-number-2">9</span> <a href="#orga19868e"><code>Ecto.Repo</code></a></h2>
+<div id="outline-container-org4c2d1d4" class="outline-2">
+<h2 id="org4c2d1d4"><span class="section-number-2">9</span> <a href="#org4c2d1d4"><code>Ecto.Repo</code></a></h2>
 <div class="outline-text-2" id="text-9">
 <p>
 <code>Ecto.Repo</code> provides basic API for communicating with database.
 </p>
 </div>
 
-<div id="outline-container-org76c980c" class="outline-3">
-<h3 id="org76c980c"><span class="section-number-3">9.1</span> <a href="#org76c980c">The Repository Pattern</a></h3>
+<div id="outline-container-org70f3beb" class="outline-3">
+<h3 id="org70f3beb"><span class="section-number-3">9.1</span> <a href="#org70f3beb">The Repository Pattern</a></h3>
 <div class="outline-text-3" id="text-9-1">
 <p>
 Ecto adopts <b><b>The Repository Pattern</b></b> for accessing underlying data store. In this pattern, there's a role called Repository who controls all the communications between Ecto and data store.
@@ -1145,8 +1146,8 @@ The keypoint is <b><b>the Repository acts as a gateway of data store</b></b>. Wh
 </div>
 </div>
 
-<div id="outline-container-org45ed383" class="outline-3">
-<h3 id="org45ed383"><span class="section-number-3">9.2</span> <a href="#org45ed383">Repository in Ecto</a></h3>
+<div id="outline-container-org715cc8d" class="outline-3">
+<h3 id="org715cc8d"><span class="section-number-3">9.2</span> <a href="#org715cc8d">Repository in Ecto</a></h3>
 <div class="outline-text-3" id="text-9-2">
 <p>
 <code>Ecto.Repo</code> is the so-called <i>Repository</i> in Ecto.
@@ -1165,8 +1166,8 @@ For brevity, in the following sections, I will use <code>Repo</code> to represen
 </div>
 </div>
 
-<div id="outline-container-orgb26deb9" class="outline-3">
-<h3 id="orgb26deb9"><span class="section-number-3">9.3</span> <a href="#orgb26deb9">Low level API for CRUD</a></h3>
+<div id="outline-container-org6d56c46" class="outline-3">
+<h3 id="org6d56c46"><span class="section-number-3">9.3</span> <a href="#org6d56c46">Low level API for CRUD</a></h3>
 <div class="outline-text-3" id="text-9-3">
 <p>
 <code>Repo</code> provides low level API to complete CRUD operations directly.
@@ -1226,8 +1227,8 @@ When using <code>Repo.query</code>. you will find the return value is hard to pa
 </div>
 </div>
 
-<div id="outline-container-orge860a45" class="outline-3">
-<h3 id="orge860a45"><span class="section-number-3">9.4</span> <a href="#orge860a45">Extending Repo</a></h3>
+<div id="outline-container-org714a0f8" class="outline-3">
+<h3 id="org714a0f8"><span class="section-number-3">9.4</span> <a href="#org714a0f8">Extending Repo</a></h3>
 <div class="outline-text-3" id="text-9-4">
 <p>
 <code>Repo</code> is a regular Elixir module, we can extend it as normal. It is useful when we want to:
@@ -1264,8 +1265,8 @@ Call the added function:
 </div>
 </div>
 
-<div id="outline-container-org9ef72b8" class="outline-3">
-<h3 id="org9ef72b8"><span class="section-number-3">9.5</span> <a href="#org9ef72b8">Last</a></h3>
+<div id="outline-container-orgc05fc8f" class="outline-3">
+<h3 id="orgc05fc8f"><span class="section-number-3">9.5</span> <a href="#orgc05fc8f">Last</a></h3>
 <div class="outline-text-3" id="text-9-5">
 <p>
 Read more details at <code>h Ecto.Repo</code>.
@@ -1274,16 +1275,16 @@ Read more details at <code>h Ecto.Repo</code>.
 </div>
 </div>
 
-<div id="outline-container-org3a628c7" class="outline-2">
-<h2 id="org3a628c7"><span class="section-number-2">10</span> <a href="#org3a628c7"><code>Ecto.Schema</code></a></h2>
+<div id="outline-container-org24d0bea" class="outline-2">
+<h2 id="org24d0bea"><span class="section-number-2">10</span> <a href="#org24d0bea"><code>Ecto.Schema</code></a></h2>
 <div class="outline-text-2" id="text-10">
 <p>
 <code>Ecto.Schema</code> provides DSL for mapping data source to Elixir structs.
 </p>
 </div>
 
-<div id="outline-container-orgd0b057b" class="outline-3">
-<h3 id="orgd0b057b"><span class="section-number-3">10.1</span> <a href="#orgd0b057b">Creating schemas</a></h3>
+<div id="outline-container-org87065fe" class="outline-3">
+<h3 id="org87065fe"><span class="section-number-3">10.1</span> <a href="#org87065fe">Creating schemas</a></h3>
 <div class="outline-text-3" id="text-10-1">
 <div class="note">
 <p>
@@ -1299,7 +1300,7 @@ Like creating a migration, when creating a schema, we generally define following
 </div>
 </div>
 
-<div id="outline-container-org490c5da" class="outline-4">
+<div id="outline-container-org75b4107" class="outline-4">
 <h4 id="creating-a-context"><span class="section-number-4">10.1.1</span> <a href="#creating-a-context">creating a context first</a></h4>
 <div class="outline-text-4" id="text-creating-a-context">
 <p>
@@ -1325,8 +1326,8 @@ So far, the context is empty, because we have no public API for this context.
 </div>
 </div>
 
-<div id="outline-container-orgd2beb7e" class="outline-4">
-<h4 id="orgd2beb7e"><span class="section-number-4">10.1.2</span> <a href="#orgd2beb7e">association related macros</a></h4>
+<div id="outline-container-org5f09a43" class="outline-4">
+<h4 id="org5f09a43"><span class="section-number-4">10.1.2</span> <a href="#org5f09a43">association related macros</a></h4>
 <div class="outline-text-4" id="text-10-1-2">
 <p>
 <code>Ecto.Schema</code> provides following macros for indicating the associations between schemas:
@@ -1343,8 +1344,8 @@ It's hard to understand them without any example. Next, we will create necessary
 </div>
 </div>
 
-<div id="outline-container-org378c477" class="outline-4">
-<h4 id="org378c477"><span class="section-number-4">10.1.3</span> <a href="#org378c477">creating a schema for authors</a></h4>
+<div id="outline-container-org175509e" class="outline-4">
+<h4 id="org175509e"><span class="section-number-4">10.1.3</span> <a href="#org175509e">creating a schema for authors</a></h4>
 <div class="outline-text-4" id="text-10-1-3">
 <p>
 Edit <code>lib/paper/cms/author.ex</code>:
@@ -1379,8 +1380,8 @@ Edit <code>lib/paper/cms/author.ex</code>:
 </div>
 </div>
 
-<div id="outline-container-orgbcbe357" class="outline-4">
-<h4 id="orgbcbe357"><span class="section-number-4">10.1.4</span> <a href="#orgbcbe357">creating a schema for permalinks</a></h4>
+<div id="outline-container-org9f2f66d" class="outline-4">
+<h4 id="org9f2f66d"><span class="section-number-4">10.1.4</span> <a href="#org9f2f66d">creating a schema for permalinks</a></h4>
 <div class="outline-text-4" id="text-10-1-4">
 <p>
 Edit <code>lib/paper/cms/permalink.ex</code>:
@@ -1403,8 +1404,8 @@ Edit <code>lib/paper/cms/permalink.ex</code>:
 </div>
 </div>
 
-<div id="outline-container-org4a67280" class="outline-4">
-<h4 id="org4a67280"><span class="section-number-4">10.1.5</span> <a href="#org4a67280">creating a schema for comments</a></h4>
+<div id="outline-container-orgd863bf9" class="outline-4">
+<h4 id="orgd863bf9"><span class="section-number-4">10.1.5</span> <a href="#orgd863bf9">creating a schema for comments</a></h4>
 <div class="outline-text-4" id="text-10-1-5">
 <p>
 Edit <code>lib/paper/cms/comment.ex</code>:
@@ -1429,8 +1430,8 @@ Edit <code>lib/paper/cms/comment.ex</code>:
 </div>
 </div>
 
-<div id="outline-container-org86ef18f" class="outline-4">
-<h4 id="org86ef18f"><span class="section-number-4">10.1.6</span> <a href="#org86ef18f">creating a schema for tags</a></h4>
+<div id="outline-container-org278021d" class="outline-4">
+<h4 id="org278021d"><span class="section-number-4">10.1.6</span> <a href="#org278021d">creating a schema for tags</a></h4>
 <div class="outline-text-4" id="text-10-1-6">
 <p>
 Edit <code>lib/paper/cms/tag.ex</code>:
@@ -1453,8 +1454,8 @@ Edit <code>lib/paper/cms/tag.ex</code>:
 </div>
 </div>
 
-<div id="outline-container-orge246b65" class="outline-4">
-<h4 id="orge246b65"><span class="section-number-4">10.1.7</span> <a href="#orge246b65">creating a schema for posts</a></h4>
+<div id="outline-container-org52d930b" class="outline-4">
+<h4 id="org52d930b"><span class="section-number-4">10.1.7</span> <a href="#org52d930b">creating a schema for posts</a></h4>
 <div class="outline-text-4" id="text-10-1-7">
 <p>
 Edit <code>lib/paper/cms/post.ex</code>:
@@ -1485,8 +1486,8 @@ Edit <code>lib/paper/cms/post.ex</code>:
 </div>
 </div>
 
-<div id="outline-container-org375ad92" class="outline-4">
-<h4 id="org375ad92"><span class="section-number-4">10.1.8</span> <a href="#org375ad92">available field types</a></h4>
+<div id="outline-container-org6ffe206" class="outline-4">
+<h4 id="org6ffe206"><span class="section-number-4">10.1.8</span> <a href="#org6ffe206">available field types</a></h4>
 <div class="outline-text-4" id="text-10-1-8">
 <dl class="org-dl">
 <dt>built-in types</dt><dd>Read more details at <b>Primative types</b> section in <code>h Ecto.Schema</code>.</dd>
@@ -1497,8 +1498,8 @@ Edit <code>lib/paper/cms/post.ex</code>:
 </div>
 </div>
 
-<div id="outline-container-org7b052cd" class="outline-3">
-<h3 id="org7b052cd"><span class="section-number-3">10.2</span> <a href="#org7b052cd">Starting IEx</a></h3>
+<div id="outline-container-org3a4477b" class="outline-3">
+<h3 id="org3a4477b"><span class="section-number-3">10.2</span> <a href="#org3a4477b">Starting IEx</a></h3>
 <div class="outline-text-3" id="text-10-2">
 <p>
 We have created all required schemas, it is time to do some experiments with them.
@@ -1529,12 +1530,12 @@ Now, let's start it:
 </div>
 </div>
 
-<div id="outline-container-orgfce6c3a" class="outline-3">
-<h3 id="orgfce6c3a"><span class="section-number-3">10.3</span> <a href="#orgfce6c3a">CRUD</a></h3>
+<div id="outline-container-org29dca65" class="outline-3">
+<h3 id="org29dca65"><span class="section-number-3">10.3</span> <a href="#org29dca65">CRUD</a></h3>
 <div class="outline-text-3" id="text-10-3">
 </div>
-<div id="outline-container-org32153d2" class="outline-4">
-<h4 id="org32153d2"><span class="section-number-4">10.3.1</span> <a href="#org32153d2">insert</a></h4>
+<div id="outline-container-org762cd59" class="outline-4">
+<h4 id="org762cd59"><span class="section-number-4">10.3.1</span> <a href="#org762cd59">insert</a></h4>
 <div class="outline-text-4" id="text-10-3-1">
 <p>
 Ecto provides following functions which can be used with schemas:
@@ -1548,8 +1549,8 @@ Ecto provides following functions which can be used with schemas:
 </ul>
 </div>
 
-<div id="outline-container-org0e2d8de" class="outline-5">
-<h5 id="org0e2d8de"><span class="section-number-5">10.3.1.1</span> <a href="#org0e2d8de">inserting without association</a></h5>
+<div id="outline-container-orgbfb9ef8" class="outline-5">
+<h5 id="orgbfb9ef8"><span class="section-number-5">10.3.1.1</span> <a href="#orgbfb9ef8">inserting without association</a></h5>
 <div class="outline-text-5" id="text-10-3-1-1">
 <p>
 Authors and tags can be inserted without associations:
@@ -1581,8 +1582,8 @@ Obviously, above useless data is not what we want. If you want to validate the d
 </div>
 </div>
 
-<div id="outline-container-orgbe12bd0" class="outline-5">
-<h5 id="orgbe12bd0"><span class="section-number-5">10.3.1.2</span> <a href="#orgbe12bd0">inserting with associations</a></h5>
+<div id="outline-container-org7f4bd70" class="outline-5">
+<h5 id="org7f4bd70"><span class="section-number-5">10.3.1.2</span> <a href="#org7f4bd70">inserting with associations</a></h5>
 <div class="outline-text-5" id="text-10-3-1-2">
 <p>
 Inserting with associations needs <code>Ecto.Changeset</code> which will be introduced later.
@@ -1591,8 +1592,8 @@ Inserting with associations needs <code>Ecto.Changeset</code> which will be intr
 </div>
 </div>
 
-<div id="outline-container-org7df3ab9" class="outline-4">
-<h4 id="org7df3ab9"><span class="section-number-4">10.3.2</span> <a href="#org7df3ab9">query</a></h4>
+<div id="outline-container-orgaeae2c1" class="outline-4">
+<h4 id="orgaeae2c1"><span class="section-number-4">10.3.2</span> <a href="#orgaeae2c1">query</a></h4>
 <div class="outline-text-4" id="text-10-3-2">
 <p>
 Ecto provides following functions which can be used with schemas:
@@ -1625,8 +1626,8 @@ If you need build complex query, try to use <code>Ecto.Query</code> which will b
 </div>
 </div>
 
-<div id="outline-container-org12cf090" class="outline-4">
-<h4 id="org12cf090"><span class="section-number-4">10.3.3</span> <a href="#org12cf090">update</a></h4>
+<div id="outline-container-org30794cc" class="outline-4">
+<h4 id="org30794cc"><span class="section-number-4">10.3.3</span> <a href="#org30794cc">update</a></h4>
 <div class="outline-text-4" id="text-10-3-3">
 <p>
 Ecto provides following functions which can be used with schemas:
@@ -1643,8 +1644,8 @@ Updating needs <code>Ecto.Changeset</code> which will be introduced later.
 </div>
 </div>
 
-<div id="outline-container-orgb8c2ce1" class="outline-4">
-<h4 id="orgb8c2ce1"><span class="section-number-4">10.3.4</span> <a href="#orgb8c2ce1">delete</a></h4>
+<div id="outline-container-org4c8615e" class="outline-4">
+<h4 id="org4c8615e"><span class="section-number-4">10.3.4</span> <a href="#org4c8615e">delete</a></h4>
 <div class="outline-text-4" id="text-10-3-4">
 <p>
 Ecto provides following functions which can be used with schemas:
@@ -1673,8 +1674,8 @@ Delete one author:
 </div>
 </div>
 
-<div id="outline-container-orgb4b0ad9" class="outline-3">
-<h3 id="orgb4b0ad9"><span class="section-number-3">10.4</span> <a href="#orgb4b0ad9">Last</a></h3>
+<div id="outline-container-org866ea24" class="outline-3">
+<h3 id="org866ea24"><span class="section-number-3">10.4</span> <a href="#org866ea24">Last</a></h3>
 <div class="outline-text-3" id="text-10-4">
 <p>
 As you see, without <code>Ecto.Changeset</code>, we can't insert or update data reliably.
@@ -1687,8 +1688,8 @@ Next, we will introduce <code>Ecto.Changeset</code>.
 </div>
 </div>
 
-<div id="outline-container-orga8b3363" class="outline-2">
-<h2 id="orga8b3363"><span class="section-number-2">11</span> <a href="#orga8b3363"><code>Ecto.Changeset</code></a></h2>
+<div id="outline-container-org8f77748" class="outline-2">
+<h2 id="org8f77748"><span class="section-number-2">11</span> <a href="#org8f77748"><code>Ecto.Changeset</code></a></h2>
 <div class="outline-text-2" id="text-11">
 <p>
 <code>Ecto.Changeset</code> encapsulates the whole change policy, including allowed fields, detecting changes and validations.
@@ -1699,8 +1700,8 @@ In short, it defines the updating policies which make sure the database is chang
 </p>
 </div>
 
-<div id="outline-container-org6737d18" class="outline-3">
-<h3 id="org6737d18"><span class="section-number-3">11.1</span> <a href="#org6737d18">About <code>%Ecto.Changeset{}</code></a></h3>
+<div id="outline-container-org6a7a2ec" class="outline-3">
+<h3 id="org6a7a2ec"><span class="section-number-3">11.1</span> <a href="#org6a7a2ec">About <code>%Ecto.Changeset{}</code></a></h3>
 <div class="outline-text-3" id="text-11-1">
 <p>
 <code>%Ecto.Changeset{}</code> is the struct holding all the changes which will be performed to the database.
@@ -1712,8 +1713,8 @@ For brevity, in the following sections, I will use <code>%Changeset{}</code> ins
 </div>
 </div>
 
-<div id="outline-container-orgfcf88dd" class="outline-3">
-<h3 id="orgfcf88dd"><span class="section-number-3">11.2</span> <a href="#orgfcf88dd">Basics</a></h3>
+<div id="outline-container-orgb157da2" class="outline-3">
+<h3 id="orgb157da2"><span class="section-number-3">11.2</span> <a href="#orgb157da2">Basics</a></h3>
 <div class="outline-text-3" id="text-11-2">
 <p>
 General updating process is broke up into 3 stages:
@@ -1738,8 +1739,8 @@ Next, we will talk about each step in detail.
 </div>
 </div>
 
-<div id="outline-container-org18ffb39" class="outline-3">
-<h3 id="org18ffb39"><span class="section-number-3">11.3</span> <a href="#org18ffb39">Casting and Filtering</a></h3>
+<div id="outline-container-orgc1d673d" class="outline-3">
+<h3 id="orgc1d673d"><span class="section-number-3">11.3</span> <a href="#orgc1d673d">Casting and Filtering</a></h3>
 <div class="outline-text-3" id="text-11-3">
 <p>
 The first step is casting and filtering the raw data, and transform it as <code>%Changeset{}</code>. In Ecto:
@@ -1754,8 +1755,8 @@ Depending on where the data is coming from, this step can be done in two differe
 </p>
 </div>
 
-<div id="outline-container-org99af4a5" class="outline-4">
-<h4 id="org99af4a5"><span class="section-number-4">11.3.1</span> <a href="#org99af4a5">handling internal data</a></h4>
+<div id="outline-container-orga4bcab8" class="outline-4">
+<h4 id="orga4bcab8"><span class="section-number-4">11.3.1</span> <a href="#orga4bcab8">handling internal data</a></h4>
 <div class="outline-text-4" id="text-11-3-1">
 <blockquote>
 <p>
@@ -1803,8 +1804,8 @@ Read more details at <code>h Ecto.Changeset.change</code>.
 </div>
 </div>
 
-<div id="outline-container-org9c4da42" class="outline-4">
-<h4 id="org9c4da42"><span class="section-number-4">11.3.2</span> <a href="#org9c4da42">handling external data</a></h4>
+<div id="outline-container-org9da5f0f" class="outline-4">
+<h4 id="org9da5f0f"><span class="section-number-4">11.3.2</span> <a href="#org9da5f0f">handling external data</a></h4>
 <div class="outline-text-4" id="text-11-3-2">
 <blockquote>
 <p>
@@ -1845,8 +1846,8 @@ Read more details at <code>h Ecto.Changeset.cast</code>.
 </div>
 </div>
 
-<div id="outline-container-org212dea8" class="outline-3">
-<h3 id="org212dea8"><span class="section-number-3">11.4</span> <a href="#org212dea8">Validating</a></h3>
+<div id="outline-container-org5d9748f" class="outline-3">
+<h3 id="org5d9748f"><span class="section-number-3">11.4</span> <a href="#org5d9748f">Validating</a></h3>
 <div class="outline-text-3" id="text-11-4">
 <p>
 After casting and filtering, we have a <code>%Changeset{}</code> which represents changes. Before sending it to database, we should also validate the changes.
@@ -1861,16 +1862,16 @@ Ecto provides two kinds of utilities for validating. They perform similar functi
 </ul>
 </div>
 
-<div id="outline-container-org4ee2af1" class="outline-4">
-<h4 id="org4ee2af1"><span class="section-number-4">11.4.1</span> <a href="#org4ee2af1">validations</a></h4>
+<div id="outline-container-orgbebd944" class="outline-4">
+<h4 id="orgbebd944"><span class="section-number-4">11.4.1</span> <a href="#orgbebd944">validations</a></h4>
 <div class="outline-text-4" id="text-11-4-1">
 <p>
 Validations are functions provided by <code>Ecto.Changeset</code>. They accept a changeset, return a changeset.
 </p>
 </div>
 
-<div id="outline-container-orgf3516b3" class="outline-5">
-<h5 id="orgf3516b3"><span class="section-number-5">11.4.1.1</span> <a href="#orgf3516b3">built-in validations</a></h5>
+<div id="outline-container-org6deec06" class="outline-5">
+<h5 id="org6deec06"><span class="section-number-5">11.4.1.1</span> <a href="#org6deec06">built-in validations</a></h5>
 <div class="outline-text-5" id="text-11-4-1-1">
 <p>
 Built-in validations are in form of <code>Ecto.Changeset.validate_*</code>.
@@ -1897,8 +1898,8 @@ When passing all the validations, <code>changeset.valid?</code> will be <code>tr
 </div>
 </div>
 
-<div id="outline-container-orga5e78a2" class="outline-5">
-<h5 id="orga5e78a2"><span class="section-number-5">11.4.1.2</span> <a href="#orga5e78a2">custom validations</a></h5>
+<div id="outline-container-orgf80d7bb" class="outline-5">
+<h5 id="orgf80d7bb"><span class="section-number-5">11.4.1.2</span> <a href="#orgf80d7bb">custom validations</a></h5>
 <div class="outline-text-5" id="text-11-4-1-2">
 <p>
 Ecto provides support for custom validations in case that you need validtions which are not supported by it.
@@ -1911,8 +1912,8 @@ Read more details at <code>h Ecto.Changeset.validate_change</code>.
 </div>
 </div>
 
-<div id="outline-container-orgb493005" class="outline-4">
-<h4 id="orgb493005"><span class="section-number-4">11.4.2</span> <a href="#orgb493005">constraints</a></h4>
+<div id="outline-container-org72bfb57" class="outline-4">
+<h4 id="org72bfb57"><span class="section-number-4">11.4.2</span> <a href="#org72bfb57">constraints</a></h4>
 <div class="outline-text-4" id="text-11-4-2">
 <p>
 Like validations, contraints are functions provided by <code>Ecto.Changeset</code>, too. It allows developers to use underlying relational database features to maintain database integrity. Such as, preventing duplicated username in a user management system.
@@ -1942,8 +1943,8 @@ Unlike validations, constraints won't run before hitting database. Instead, they
 </div>
 </div>
 
-<div id="outline-container-orgdcd73bf" class="outline-5">
-<h5 id="orgdcd73bf"><span class="section-number-5">11.4.2.1</span> <a href="#orgdcd73bf">defining database constraints</a></h5>
+<div id="outline-container-org7ef1ef4" class="outline-5">
+<h5 id="org7ef1ef4"><span class="section-number-5">11.4.2.1</span> <a href="#org7ef1ef4">defining database constraints</a></h5>
 <div class="outline-text-5" id="text-11-4-2-1">
 <p>
 Constraints are enforced by database. Because of that, they should be defined in database level.
@@ -1959,8 +1960,8 @@ In order to manage database constraints, it is better to create them by using mi
 </div>
 </div>
 
-<div id="outline-container-orgd322a03" class="outline-5">
-<h5 id="orgd322a03"><span class="section-number-5">11.4.2.2</span> <a href="#orgd322a03">catching constraint errors</a></h5>
+<div id="outline-container-org7cc0d9e" class="outline-5">
+<h5 id="org7cc0d9e"><span class="section-number-5">11.4.2.2</span> <a href="#org7cc0d9e">catching constraint errors</a></h5>
 <div class="outline-text-5" id="text-11-4-2-2">
 <p>
 If a constraint error isn't catched, it will be raised as <code>Ecto.ConstraintError</code>.
@@ -2004,8 +2005,8 @@ As you can see,  <code>Ecto.ConstraintError</code> is catched and transformed as
 </div>
 </div>
 
-<div id="outline-container-orgb0bb8b1" class="outline-4">
-<h4 id="orgb0bb8b1"><span class="section-number-4">11.4.3</span> <a href="#orgb0bb8b1">execution rules of validations and constraints</a></h4>
+<div id="outline-container-org6fd66fb" class="outline-4">
+<h4 id="org6fd66fb"><span class="section-number-4">11.4.3</span> <a href="#org6fd66fb">execution rules of validations and constraints</a></h4>
 <div class="outline-text-4" id="text-11-4-3">
 <ol class="org-ol">
 <li>execute all of valiations in order:
@@ -2021,8 +2022,8 @@ As you can see,  <code>Ecto.ConstraintError</code> is catched and transformed as
 </ol>
 </div>
 </div>
-<div id="outline-container-org4d82068" class="outline-4">
-<h4 id="org4d82068"><span class="section-number-4">11.4.4</span> <a href="#org4d82068">mixins</a></h4>
+<div id="outline-container-org68a43a9" class="outline-4">
+<h4 id="org68a43a9"><span class="section-number-4">11.4.4</span> <a href="#org68a43a9">mixins</a></h4>
 <div class="outline-text-4" id="text-11-4-4">
 <p>
 Mixins are functions mix the features of validations and constraints. They have following features:
@@ -2040,8 +2041,8 @@ Mixin is not a terminology in Ecto. I name them in this way, personally.
 </div>
 </div>
 
-<div id="outline-container-org0eec7b9" class="outline-5">
-<h5 id="org0eec7b9"><span class="section-number-5">11.4.4.1</span> <a href="#org0eec7b9"><code>Ecto.Changeset.unsafe_validate_unique</code></a></h5>
+<div id="outline-container-org69e5631" class="outline-5">
+<h5 id="org69e5631"><span class="section-number-5">11.4.4.1</span> <a href="#org69e5631"><code>Ecto.Changeset.unsafe_validate_unique</code></a></h5>
 <div class="outline-text-5" id="text-11-4-4-1">
 <p>
 Read details at <code>h Ecto.Changeset.unsafe_validate_unique</code>.
@@ -2062,8 +2063,8 @@ Read details at <code>h Ecto.Changeset.unsafe_validate_unique</code>.
 </div>
 </div>
 </div>
-<div id="outline-container-org74fc41e" class="outline-4">
-<h4 id="org74fc41e"><span class="section-number-4">11.4.5</span> <a href="#org74fc41e">rendering errors</a></h4>
+<div id="outline-container-org52ceb6c" class="outline-4">
+<h4 id="org52ceb6c"><span class="section-number-4">11.4.5</span> <a href="#org52ceb6c">rendering errors</a></h4>
 <div class="outline-text-4" id="text-11-4-5">
 <p>
 Ecto doesn't provide solutions for rendering <code>changeset.errors</code>. When you need to render them, consider using <code>Ecto.Changeset.traverse_errors</code>.
@@ -2072,8 +2073,8 @@ Ecto doesn't provide solutions for rendering <code>changeset.errors</code>. When
 </div>
 </div>
 
-<div id="outline-container-org84fe36d" class="outline-3">
-<h3 id="org84fe36d"><span class="section-number-3">11.5</span> <a href="#org84fe36d">Sending Changes to database</a></h3>
+<div id="outline-container-org587d82b" class="outline-3">
+<h3 id="org587d82b"><span class="section-number-3">11.5</span> <a href="#org587d82b">Sending Changes to database</a></h3>
 <div class="outline-text-3" id="text-11-5">
 <p>
 Last step, send <code>%Changeset{}</code> to database with functions provided by <code>Repo</code>, such as <code>Repo.insert</code>, <code>Repo.update</code>, etc.
@@ -2081,16 +2082,16 @@ Last step, send <code>%Changeset{}</code> to database with functions provided by
 </div>
 </div>
 
-<div id="outline-container-org59e80ed" class="outline-3">
-<h3 id="org59e80ed"><span class="section-number-3">11.6</span> <a href="#org59e80ed">Adding updating policies for schemas</a></h3>
+<div id="outline-container-org9ae7260" class="outline-3">
+<h3 id="org9ae7260"><span class="section-number-3">11.6</span> <a href="#org9ae7260">Adding updating policies for schemas</a></h3>
 <div class="outline-text-3" id="text-11-6">
 <p>
 We have known all the necessary things about <code>Ecto.Changeset</code>. It's time to write update policies for schemas.
 </p>
 </div>
 
-<div id="outline-container-orgd35e344" class="outline-4">
-<h4 id="orgd35e344"><span class="section-number-4">11.6.1</span> <a href="#orgd35e344">Adding updating policy for Author</a></h4>
+<div id="outline-container-org0177992" class="outline-4">
+<h4 id="org0177992"><span class="section-number-4">11.6.1</span> <a href="#org0177992">Adding updating policy for Author</a></h4>
 <div class="outline-text-4" id="text-11-6-1">
 <p>
 Edit <code>lib/paper/cms/author.ex</code>:
@@ -2114,8 +2115,8 @@ Edit <code>lib/paper/cms/author.ex</code>:
 </div>
 </div>
 
-<div id="outline-container-orgf761bc2" class="outline-4">
-<h4 id="orgf761bc2"><span class="section-number-4">11.6.2</span> <a href="#orgf761bc2">Adding updating policy for Post</a></h4>
+<div id="outline-container-org8c4e9d7" class="outline-4">
+<h4 id="org8c4e9d7"><span class="section-number-4">11.6.2</span> <a href="#org8c4e9d7">Adding updating policy for Post</a></h4>
 <div class="outline-text-4" id="text-11-6-2">
 <p>
 Edit <code>lib/paper/cms/post.ex</code>:
@@ -2135,8 +2136,8 @@ Edit <code>lib/paper/cms/post.ex</code>:
 </div>
 </div>
 
-<div id="outline-container-orga8e6e55" class="outline-4">
-<h4 id="orga8e6e55"><span class="section-number-4">11.6.3</span> <a href="#orga8e6e55">Adding updating policy for Permalink</a></h4>
+<div id="outline-container-org7903b0c" class="outline-4">
+<h4 id="org7903b0c"><span class="section-number-4">11.6.3</span> <a href="#org7903b0c">Adding updating policy for Permalink</a></h4>
 <div class="outline-text-4" id="text-11-6-3">
 <p>
 Edit <code>lib/paper/cms/permalink.ex</code>:
@@ -2158,8 +2159,8 @@ Edit <code>lib/paper/cms/permalink.ex</code>:
 </div>
 </div>
 
-<div id="outline-container-org8874d50" class="outline-4">
-<h4 id="org8874d50"><span class="section-number-4">11.6.4</span> <a href="#org8874d50">Adding updating policy for Comment</a></h4>
+<div id="outline-container-orgbd12763" class="outline-4">
+<h4 id="orgbd12763"><span class="section-number-4">11.6.4</span> <a href="#orgbd12763">Adding updating policy for Comment</a></h4>
 <div class="outline-text-4" id="text-11-6-4">
 <p>
 Edit <code>lib/paper/cms/comment.ex</code>:
@@ -2179,8 +2180,8 @@ Edit <code>lib/paper/cms/comment.ex</code>:
 </div>
 </div>
 </div>
-<div id="outline-container-orgbd8f577" class="outline-4">
-<h4 id="orgbd8f577"><span class="section-number-4">11.6.5</span> <a href="#orgbd8f577">Adding updating policy for Tag</a></h4>
+<div id="outline-container-org5825d99" class="outline-4">
+<h4 id="org5825d99"><span class="section-number-4">11.6.5</span> <a href="#org5825d99">Adding updating policy for Tag</a></h4>
 <div class="outline-text-4" id="text-11-6-5">
 <p>
 Edit <code>lib/paper/cms/tag.ex</code>:
@@ -2204,8 +2205,8 @@ Edit <code>lib/paper/cms/tag.ex</code>:
 </div>
 </div>
 
-<div id="outline-container-orgebb6cc4" class="outline-3">
-<h3 id="orgebb6cc4"><span class="section-number-3">11.7</span> <a href="#orgebb6cc4">Last</a></h3>
+<div id="outline-container-org34d2142" class="outline-3">
+<h3 id="org34d2142"><span class="section-number-3">11.7</span> <a href="#org34d2142">Last</a></h3>
 <div class="outline-text-3" id="text-11-7">
 <p>
 Read more details at <code>Ecto.Changeset</code>.
@@ -2214,8 +2215,8 @@ Read more details at <code>Ecto.Changeset</code>.
 </div>
 </div>
 
-<div id="outline-container-orge92d3ab" class="outline-2">
-<h2 id="orge92d3ab"><span class="section-number-2">12</span> <a href="#orge92d3ab">Filling the Context</a></h2>
+<div id="outline-container-orgf17d25b" class="outline-2">
+<h2 id="orgf17d25b"><span class="section-number-2">12</span> <a href="#orgf17d25b">Filling the Context</a></h2>
 <div class="outline-text-2" id="text-12">
 <p>
 We have created:
@@ -2285,8 +2286,8 @@ Edit <code>lib/paper/cms.ex</code>:
 </div>
 </div>
 
-<div id="outline-container-org3887e8a" class="outline-2">
-<h2 id="org3887e8a"><span class="section-number-2">13</span> <a href="#org3887e8a"><code>Ecto.Query</code></a></h2>
+<div id="outline-container-orgf506ecd" class="outline-2">
+<h2 id="orgf506ecd"><span class="section-number-2">13</span> <a href="#orgf506ecd"><code>Ecto.Query</code></a></h2>
 <div class="outline-text-2" id="text-13">
 <p>
 <code>Ecto.Query</code> provides DSL for querying. It makes querying simple and elegant.
@@ -2297,8 +2298,8 @@ Edit <code>lib/paper/cms.ex</code>:
 </ul>
 </div>
 
-<div id="outline-container-org35a8a2c" class="outline-3">
-<h3 id="org35a8a2c"><span class="section-number-3">13.1</span> <a href="#org35a8a2c">Syntax</a></h3>
+<div id="outline-container-orgfaa3f7b" class="outline-3">
+<h3 id="orgfaa3f7b"><span class="section-number-3">13.1</span> <a href="#orgfaa3f7b">Syntax</a></h3>
 <div class="outline-text-3" id="text-13-1">
 <p>
 There are two types of syntax when using <code>Ecto.Query</code>:
@@ -2317,8 +2318,8 @@ Following SQL will be wrote into above two types of syntax:
 </div>
 </div>
 
-<div id="outline-container-org9cf30d5" class="outline-4">
-<h4 id="org9cf30d5"><span class="section-number-4">13.1.1</span> <a href="#org9cf30d5">keyword syntax</a></h4>
+<div id="outline-container-org06cfba4" class="outline-4">
+<h4 id="org06cfba4"><span class="section-number-4">13.1.1</span> <a href="#org06cfba4">keyword syntax</a></h4>
 <div class="outline-text-4" id="text-13-1-1">
 <div class="org-src-container">
 <pre class="src src-elixir"><span class="org-variable-name">query</span> = from a <span class="org-keyword">in</span> <span class="org-string">"authors"</span>, <span class="org-elixir-atom">select:</span> [a.name, a.bio]
@@ -2329,8 +2330,8 @@ Following SQL will be wrote into above two types of syntax:
 </div>
 </div>
 
-<div id="outline-container-orgf9f660f" class="outline-4">
-<h4 id="orgf9f660f"><span class="section-number-4">13.1.2</span> <a href="#orgf9f660f">expression syntax</a></h4>
+<div id="outline-container-org21e0b5d" class="outline-4">
+<h4 id="org21e0b5d"><span class="section-number-4">13.1.2</span> <a href="#org21e0b5d">expression syntax</a></h4>
 <div class="outline-text-4" id="text-13-1-2">
 <div class="org-src-container">
 <pre class="src src-elixir"><span class="org-variable-name">query</span> = <span class="org-string">"authors"</span> |&gt; select([a], [a.name, a.bio])
@@ -2341,8 +2342,8 @@ Following SQL will be wrote into above two types of syntax:
 </div>
 </div>
 
-<div id="outline-container-org4a3dc6f" class="outline-4">
-<h4 id="org4a3dc6f"><span class="section-number-4">13.1.3</span> <a href="#org4a3dc6f">How to choose syntax?</a></h4>
+<div id="outline-container-org1c0dfc7" class="outline-4">
+<h4 id="org1c0dfc7"><span class="section-number-4">13.1.3</span> <a href="#org1c0dfc7">How to choose syntax?</a></h4>
 <div class="outline-text-4" id="text-13-1-3">
 <blockquote>
 <p>
@@ -2369,8 +2370,8 @@ Personally, I think the keyword syntax is more convinient to write. Because of t
 </div>
 </div>
 
-<div id="outline-container-org09bd368" class="outline-3">
-<h3 id="org09bd368"><span class="section-number-3">13.2</span> <a href="#org09bd368">Basic usage</a></h3>
+<div id="outline-container-org7280382" class="outline-3">
+<h3 id="org7280382"><span class="section-number-3">13.2</span> <a href="#org7280382">Basic usage</a></h3>
 <div class="outline-text-3" id="text-13-2">
 <p>
 A query is created and used in following steps:
@@ -2381,8 +2382,8 @@ A query is created and used in following steps:
 </ol>
 </div>
 
-<div id="outline-container-orgdc70e30" class="outline-4">
-<h4 id="orgdc70e30"><span class="section-number-4">13.2.1</span> <a href="#orgdc70e30">creating a query</a></h4>
+<div id="outline-container-org1d78680" class="outline-4">
+<h4 id="org1d78680"><span class="section-number-4">13.2.1</span> <a href="#org1d78680">creating a query</a></h4>
 <div class="outline-text-4" id="text-13-2-1">
 <p>
 When creating a query, you can use a table name string or a schema. All of them have implemented <code>Ecto.Queryable</code> protocol.
@@ -2413,8 +2414,8 @@ Use a schema:
 </div>
 </div>
 
-<div id="outline-container-org5049328" class="outline-4">
-<h4 id="org5049328"><span class="section-number-4">13.2.2</span> <a href="#org5049328">committing a query</a></h4>
+<div id="outline-container-org474bc33" class="outline-4">
+<h4 id="org474bc33"><span class="section-number-4">13.2.2</span> <a href="#org474bc33">committing a query</a></h4>
 <div class="outline-text-4" id="text-13-2-2">
 <p>
 Use <code>Repo.all</code>, <code>Repo.one</code> and so on for committing a query:
@@ -2427,8 +2428,8 @@ Use <code>Repo.all</code>, <code>Repo.one</code> and so on for committing a quer
 </div>
 </div>
 
-<div id="outline-container-org2c2203a" class="outline-3">
-<h3 id="org2c2203a"><span class="section-number-3">13.3</span> <a href="#org2c2203a">Debugging</a></h3>
+<div id="outline-container-org0926434" class="outline-3">
+<h3 id="org0926434"><span class="section-number-3">13.3</span> <a href="#org0926434">Debugging</a></h3>
 <div class="outline-text-3" id="text-13-3">
 <p>
 <code>Ecto.Adapters.SQL.to_sql/3</code> is used for translating a query to corresponding SQL statement. We can use these functions to help us inspect the details of queries.
@@ -2451,12 +2452,12 @@ For example:
 </div>
 </div>
 
-<div id="outline-container-org2473123" class="outline-3">
-<h3 id="org2473123"><span class="section-number-3">13.4</span> <a href="#org2473123">Dynamic values</a></h3>
+<div id="outline-container-org82df2fa" class="outline-3">
+<h3 id="org82df2fa"><span class="section-number-3">13.4</span> <a href="#org82df2fa">Dynamic values</a></h3>
 <div class="outline-text-3" id="text-13-4">
 </div>
-<div id="outline-container-org26e0ea3" class="outline-4">
-<h4 id="org26e0ea3"><span class="section-number-4">13.4.1</span> <a href="#org26e0ea3">pin operator</a></h4>
+<div id="outline-container-org45dd81d" class="outline-4">
+<h4 id="org45dd81d"><span class="section-number-4">13.4.1</span> <a href="#org45dd81d">pin operator</a></h4>
 <div class="outline-text-4" id="text-13-4-1">
 <p>
 In Ecto, <code>^</code> (pin operator) is used for marking values or expressions that need interpolation in an Ecto query.
@@ -2493,8 +2494,8 @@ An example:
 </div>
 </div>
 
-<div id="outline-container-org3a29104" class="outline-4">
-<h4 id="org3a29104"><span class="section-number-4">13.4.2</span> <a href="#org3a29104">type conversion</a></h4>
+<div id="outline-container-org1be3f61" class="outline-4">
+<h4 id="org1be3f61"><span class="section-number-4">13.4.2</span> <a href="#org1be3f61">type conversion</a></h4>
 <div class="outline-text-4" id="text-13-4-2">
 <div class="org-src-container">
 <pre class="src src-elixir"><span class="org-variable-name">author_id</span> = 2
@@ -2528,8 +2529,8 @@ Now, type conversion seems tedious. But, after using Schema, the conversion will
 </div>
 </div>
 
-<div id="outline-container-org77e86ff" class="outline-3">
-<h3 id="org77e86ff"><span class="section-number-3">13.5</span> <a href="#org77e86ff">Query bindings</a></h3>
+<div id="outline-container-org20d61ec" class="outline-3">
+<h3 id="org20d61ec"><span class="section-number-3">13.5</span> <a href="#org20d61ec">Query bindings</a></h3>
 <div class="outline-text-3" id="text-13-5">
 <p>
 A query binding is a variable referring to the table of the query. You can treat it as table alias in SQL.
@@ -2548,8 +2549,8 @@ Read more details at <b>Composition</b> section in <code>h Ecto.Query</code>.
 </p>
 </div>
 
-<div id="outline-container-org5ddb9ee" class="outline-4">
-<h4 id="org5ddb9ee"><span class="section-number-4">13.5.1</span> <a href="#org5ddb9ee">which one should I use?</a></h4>
+<div id="outline-container-org9169e8c" class="outline-4">
+<h4 id="org9169e8c"><span class="section-number-4">13.5.1</span> <a href="#org9169e8c">which one should I use?</a></h4>
 <div class="outline-text-4" id="text-13-5-1">
 <p>
 When a query is small, using positional bindings would be fine.
@@ -2562,8 +2563,8 @@ But, when a query is large and contains joins across several tables, using posit
 </div>
 </div>
 
-<div id="outline-container-orgff7273f" class="outline-3">
-<h3 id="orgff7273f"><span class="section-number-3">13.6</span> <a href="#orgff7273f">Query API</a></h3>
+<div id="outline-container-orga39c722" class="outline-3">
+<h3 id="orga39c722"><span class="section-number-3">13.6</span> <a href="#orga39c722">Query API</a></h3>
 <div class="outline-text-3" id="text-13-6">
 <p>
 Read <code>h Ecto.Query.API</code> for a complete list of all available API.
@@ -2571,8 +2572,8 @@ Read <code>h Ecto.Query.API</code> for a complete list of all available API.
 </div>
 </div>
 
-<div id="outline-container-org5e228ed" class="outline-3">
-<h3 id="org5e228ed"><span class="section-number-3">13.7</span> <a href="#org5e228ed">Raw SQL</a></h3>
+<div id="outline-container-orgfd7bcb6" class="outline-3">
+<h3 id="orgfd7bcb6"><span class="section-number-3">13.7</span> <a href="#orgfd7bcb6">Raw SQL</a></h3>
 <div class="outline-text-3" id="text-13-7">
 <blockquote>
 <p>
@@ -2605,8 +2606,8 @@ Although <code>Ecto.Query.API.fragment/1</code> is a function provided by <code>
 </div>
 </div>
 
-<div id="outline-container-orgd2169bb" class="outline-3">
-<h3 id="orgd2169bb"><span class="section-number-3">13.8</span> <a href="#orgd2169bb">Filtering with <code>where</code></a></h3>
+<div id="outline-container-org1cf57ff" class="outline-3">
+<h3 id="org1cf57ff"><span class="section-number-3">13.8</span> <a href="#org1cf57ff">Filtering with <code>where</code></a></h3>
 <div class="outline-text-3" id="text-13-8">
 <p>
 <code>Ecto.Query</code> provides two macros for filtering:
@@ -2618,8 +2619,8 @@ Although <code>Ecto.Query.API.fragment/1</code> is a function provided by <code>
 </div>
 </div>
 
-<div id="outline-container-orgfad3416" class="outline-3">
-<h3 id="orgfad3416"><span class="section-number-3">13.9</span> <a href="#orgfad3416">Combining results with unions</a></h3>
+<div id="outline-container-org5c30687" class="outline-3">
+<h3 id="org5c30687"><span class="section-number-3">13.9</span> <a href="#org5c30687">Combining results with unions</a></h3>
 <div class="outline-text-3" id="text-13-9">
 <p>
 When using unions, the two queries need to have result sets with the same column names and data type.
@@ -2677,8 +2678,8 @@ Supported unions:
 </div>
 </div>
 
-<div id="outline-container-org0ca3a26" class="outline-3">
-<h3 id="org0ca3a26"><span class="section-number-3">13.10</span> <a href="#org0ca3a26">Ordering with <code>order_by</code></a></h3>
+<div id="outline-container-org5e9e37a" class="outline-3">
+<h3 id="org5e9e37a"><span class="section-number-3">13.10</span> <a href="#org5e9e37a">Ordering with <code>order_by</code></a></h3>
 <div class="outline-text-3" id="text-13-10">
 <p>
 Read more details at <code>h Ecto.Query.order_by</code>.
@@ -2700,8 +2701,8 @@ When ordering, you should also notice <code>NULL</code> value. Some databases pu
 </div>
 </div>
 
-<div id="outline-container-org17194c9" class="outline-3">
-<h3 id="org17194c9"><span class="section-number-3">13.11</span> <a href="#org17194c9">Grouping with <code>group_by</code></a></h3>
+<div id="outline-container-orgf288060" class="outline-3">
+<h3 id="orgf288060"><span class="section-number-3">13.11</span> <a href="#orgf288060">Grouping with <code>group_by</code></a></h3>
 <div class="outline-text-3" id="text-13-11">
 <p>
 When you want to filtering rows after grouping, you should use <code>having</code> and <code>or_having</code>, rather than <code>where</code> and <code>or_where</code>.
@@ -2713,8 +2714,8 @@ Read more details at <code>h Ecto.Query.group_by</code>.
 </div>
 </div>
 
-<div id="outline-container-org0e500ea" class="outline-3">
-<h3 id="org0e500ea"><span class="section-number-3">13.12</span> <a href="#org0e500ea">Joins</a></h3>
+<div id="outline-container-org1248e25" class="outline-3">
+<h3 id="org1248e25"><span class="section-number-3">13.12</span> <a href="#org1248e25">Joins</a></h3>
 <div class="outline-text-3" id="text-13-12">
 <p>
 Joins are required when query acroess multiple tables at once.
@@ -2726,8 +2727,8 @@ Read more details at <code>h Ecto.Query.join</code>.
 </div>
 </div>
 
-<div id="outline-container-org1a2b7dc" class="outline-3">
-<h3 id="org1a2b7dc"><span class="section-number-3">13.13</span> <a href="#org1a2b7dc">Composable Queries</a></h3>
+<div id="outline-container-orgf1d1759" class="outline-3">
+<h3 id="orgf1d1759"><span class="section-number-3">13.13</span> <a href="#orgf1d1759">Composable Queries</a></h3>
 <div class="outline-text-3" id="text-13-13">
 <p>
 Ecto queries are composable. This feature can help us to break large queries into small reusable queries. Small queries are easy to read and maintain, which is good for us.
@@ -2746,8 +2747,8 @@ Read more details at <b>Composition</b> section in <code>h Ecto.Query</code>.
 </div>
 </div>
 
-<div id="outline-container-orgfcbc20d" class="outline-3">
-<h3 id="orgfcbc20d"><span class="section-number-3">13.14</span> <a href="#orgfcbc20d">Using a schema</a></h3>
+<div id="outline-container-orge0fffca" class="outline-3">
+<h3 id="orge0fffca"><span class="section-number-3">13.14</span> <a href="#orge0fffca">Using a schema</a></h3>
 <div class="outline-text-3" id="text-13-14">
 <p>
 As you see, we are using table name string in above queries. But, with a schema, we can get better experiences, because it contains:
@@ -2783,12 +2784,12 @@ With a schema, query can be simpler:
 </div>
 </div>
 
-<div id="outline-container-orgac0607f" class="outline-3">
-<h3 id="orgac0607f"><span class="section-number-3">13.15</span> <a href="#orgac0607f">Tips</a></h3>
+<div id="outline-container-org6b8c3ae" class="outline-3">
+<h3 id="org6b8c3ae"><span class="section-number-3">13.15</span> <a href="#org6b8c3ae">Tips</a></h3>
 <div class="outline-text-3" id="text-13-15">
 </div>
-<div id="outline-container-org0bf0155" class="outline-4">
-<h4 id="org0bf0155"><span class="section-number-4">13.15.1</span> <a href="#org0bf0155">specifying data structure with <code>:select</code> option</a></h4>
+<div id="outline-container-orgf102310" class="outline-4">
+<h4 id="orgf102310"><span class="section-number-4">13.15.1</span> <a href="#orgf102310">specifying data structure with <code>:select</code> option</a></h4>
 <div class="outline-text-4" id="text-13-15-1">
 <p>
 <code>:select</code> option is not only for specifying the fields returned, but also the data structure returned.
@@ -2814,8 +2815,8 @@ The output become a list of map now.
 </div>
 </div>
 
-<div id="outline-container-org8624352" class="outline-4">
-<h4 id="org8624352"><span class="section-number-4">13.15.2</span> <a href="#org8624352">other ways to use queries</a></h4>
+<div id="outline-container-orgb02ab32" class="outline-4">
+<h4 id="orgb02ab32"><span class="section-number-4">13.15.2</span> <a href="#orgb02ab32">other ways to use queries</a></h4>
 <div class="outline-text-4" id="text-13-15-2">
 <p>
 Besides reading data, queries can be used with <code>Repo.*_all</code> functions for updating or deleting data.
@@ -2837,8 +2838,8 @@ By using queries in this way, we can update or delete data precisely.
 </div>
 </div>
 
-<div id="outline-container-org528614e" class="outline-3">
-<h3 id="org528614e"><span class="section-number-3">13.16</span> <a href="#org528614e">Last</a></h3>
+<div id="outline-container-org808d21f" class="outline-3">
+<h3 id="org808d21f"><span class="section-number-3">13.16</span> <a href="#org808d21f">Last</a></h3>
 <div class="outline-text-3" id="text-13-16">
 <p>
 Read more at <code>h Ecto.Query</code>.
@@ -2847,8 +2848,8 @@ Read more at <code>h Ecto.Query</code>.
 </div>
 </div>
 
-<div id="outline-container-org9af2cbb" class="outline-2">
-<h2 id="org9af2cbb"><span class="section-number-2">14</span> <a href="#org9af2cbb">Associations</a></h2>
+<div id="outline-container-orgfc3a196" class="outline-2">
+<h2 id="orgfc3a196"><span class="section-number-2">14</span> <a href="#orgfc3a196">Associations</a></h2>
 <div class="outline-text-2" id="text-14">
 <blockquote>
 <p>
@@ -2881,8 +2882,8 @@ And, records in <b>authors</b> table is called as parent records, and records in
 </p>
 </div>
 
-<div id="outline-container-orgc07fcea" class="outline-3">
-<h3 id="orgc07fcea"><span class="section-number-3">14.1</span> <a href="#orgc07fcea">Insert / Update</a></h3>
+<div id="outline-container-org09de378" class="outline-3">
+<h3 id="org09de378"><span class="section-number-3">14.1</span> <a href="#org09de378">Insert / Update</a></h3>
 <div class="outline-text-3" id="text-14-1">
 <p>
 When inserting or updating records, there's two questions should be answered first:
@@ -2893,8 +2894,8 @@ When inserting or updating records, there's two questions should be answered fir
 </ol>
 </div>
 
-<div id="outline-container-orgf4c83b5" class="outline-4">
-<h4 id="orgf4c83b5"><span class="section-number-4">14.1.1</span> <a href="#orgf4c83b5">insert / update a parent record</a></h4>
+<div id="outline-container-org3e253a7" class="outline-4">
+<h4 id="org3e253a7"><span class="section-number-4">14.1.1</span> <a href="#org3e253a7">insert / update a parent record</a></h4>
 <div class="outline-text-4" id="text-14-1-1">
 <p>
 Just insert or update it, nothing to say.
@@ -2902,8 +2903,8 @@ Just insert or update it, nothing to say.
 </div>
 </div>
 
-<div id="outline-container-orge287e4c" class="outline-4">
-<h4 id="orge287e4c"><span class="section-number-4">14.1.2</span> <a href="#orge287e4c">insert a child record</a></h4>
+<div id="outline-container-org568b255" class="outline-4">
+<h4 id="org568b255"><span class="section-number-4">14.1.2</span> <a href="#org568b255">insert a child record</a></h4>
 <div class="outline-text-4" id="text-14-1-2">
 <p>
 When inserting a child record, <code>Ecto.build_assoc</code> is a great choice. You pass it a parent record and the name of association. It returns a new generated child record with the foreign key setting to the parent record:
@@ -2969,8 +2970,8 @@ Use <code>Ecto.Changeset.put_change</code>:
 </div>
 </div>
 
-<div id="outline-container-org768e791" class="outline-4">
-<h4 id="org768e791"><span class="section-number-4">14.1.3</span> <a href="#org768e791">update a child record</a></h4>
+<div id="outline-container-orgcf20256" class="outline-4">
+<h4 id="orgcf20256"><span class="section-number-4">14.1.3</span> <a href="#orgcf20256">update a child record</a></h4>
 <div class="outline-text-4" id="text-14-1-3">
 <p>
 Get a record, update it with <code>Ecto.Changeset</code>.
@@ -2978,12 +2979,12 @@ Get a record, update it with <code>Ecto.Changeset</code>.
 </div>
 </div>
 
-<div id="outline-container-org1841188" class="outline-4">
-<h4 id="org1841188"><span class="section-number-4">14.1.4</span> <a href="#org1841188">insert children records as a whole</a></h4>
+<div id="outline-container-orge3696ca" class="outline-4">
+<h4 id="orge3696ca"><span class="section-number-4">14.1.4</span> <a href="#orge3696ca">insert children records as a whole</a></h4>
 <div class="outline-text-4" id="text-14-1-4">
 </div>
-<div id="outline-container-orgf3c04e2" class="outline-5">
-<h5 id="orgf3c04e2"><span class="section-number-5">14.1.4.1</span> <a href="#orgf3c04e2">handling internal data</a></h5>
+<div id="outline-container-orgc4f0fad" class="outline-5">
+<h5 id="orgc4f0fad"><span class="section-number-5">14.1.4.1</span> <a href="#orgc4f0fad">handling internal data</a></h5>
 <div class="outline-text-5" id="text-14-1-4-1">
 <p>
 For handling internal data, we will use <code>Ecto.Changeset.put_assoc</code>. It takes a changeset, the name of association, and the records we want to put into the association:
@@ -3020,8 +3021,8 @@ Read more details at <code>h Ecto.Changeset.put_assoc</code>.
 </div>
 </div>
 
-<div id="outline-container-org6a8eaec" class="outline-5">
-<h5 id="org6a8eaec"><span class="section-number-5">14.1.4.2</span> <a href="#org6a8eaec">handling external data</a></h5>
+<div id="outline-container-orgaa6b207" class="outline-5">
+<h5 id="orgaa6b207"><span class="section-number-5">14.1.4.2</span> <a href="#orgaa6b207">handling external data</a></h5>
 <div class="outline-text-5" id="text-14-1-4-2">
 <p>
 For handling external data, we will use <code>Ecto.Changeset.cast_assoc</code>. It takes a changeset and the name of association.
@@ -3054,8 +3055,8 @@ Read more details at <code>h Ecto.Changeset.cast_assoc</code>.
 </div>
 </div>
 
-<div id="outline-container-org373803a" class="outline-4">
-<h4 id="org373803a"><span class="section-number-4">14.1.5</span> <a href="#org373803a">update children records as a whole</a></h4>
+<div id="outline-container-orga84bca3" class="outline-4">
+<h4 id="orga84bca3"><span class="section-number-4">14.1.5</span> <a href="#orga84bca3">update children records as a whole</a></h4>
 <div class="outline-text-4" id="text-14-1-5">
 <p>
 When updating children records as a whole, we are still using <code>Ecto.Changeset.put_assoc</code> and <code>Ecto.Changeset.cast_assoc</code>.
@@ -3102,12 +3103,12 @@ Read more details in the <b>Associations, embeds and on replace</b> section of <
 </div>
 </div>
 
-<div id="outline-container-orged55a12" class="outline-3">
-<h3 id="orged55a12"><span class="section-number-3">14.2</span> <a href="#orged55a12">Query</a></h3>
+<div id="outline-container-orgbccae6b" class="outline-3">
+<h3 id="orgbccae6b"><span class="section-number-3">14.2</span> <a href="#orgbccae6b">Query</a></h3>
 <div class="outline-text-3" id="text-14-2">
 </div>
-<div id="outline-container-orgbaa560b" class="outline-4">
-<h4 id="orgbaa560b"><span class="section-number-4">14.2.1</span> <a href="#orgbaa560b">load associations</a></h4>
+<div id="outline-container-orgb5f348a" class="outline-4">
+<h4 id="orgb5f348a"><span class="section-number-4">14.2.1</span> <a href="#orgb5f348a">load associations</a></h4>
 <div class="outline-text-4" id="text-14-2-1">
 <p>
 Associations must be preloaded manually.
@@ -3162,8 +3163,8 @@ If you wanna get authors and associated posts in one query, <code>join</code> ca
 </div>
 </div>
 
-<div id="outline-container-org17e71a6" class="outline-4">
-<h4 id="org17e71a6"><span class="section-number-4">14.2.2</span> <a href="#org17e71a6">load associations only</a></h4>
+<div id="outline-container-orgc791c13" class="outline-4">
+<h4 id="orgc791c13"><span class="section-number-4">14.2.2</span> <a href="#orgc791c13">load associations only</a></h4>
 <div class="outline-text-4" id="text-14-2-2">
 <div class="org-src-container">
 <pre class="src src-elixir"><span class="org-variable-name">author</span> = <span class="org-type">Repo</span>.get_by(<span class="org-type">Author</span>, %{<span class="org-elixir-atom">name:</span> <span class="org-string">"Spike"</span>})
@@ -3175,8 +3176,8 @@ If you wanna get authors and associated posts in one query, <code>join</code> ca
 </div>
 </div>
 
-<div id="outline-container-org65638df" class="outline-4">
-<h4 id="org65638df"><span class="section-number-4">14.2.3</span> <a href="#org65638df">load nested associations</a></h4>
+<div id="outline-container-org6c91eb4" class="outline-4">
+<h4 id="org6c91eb4"><span class="section-number-4">14.2.3</span> <a href="#org6c91eb4">load nested associations</a></h4>
 <div class="outline-text-4" id="text-14-2-3">
 <div class="org-src-container">
 <pre class="src src-elixir"><span class="org-variable-name">query</span> = from <span class="org-type">Artist</span>, <span class="org-elixir-atom">preload:</span> [<span class="org-elixir-atom">posts:</span> <span class="org-elixir-atom">:comments</span>]
@@ -3192,12 +3193,12 @@ Ecto will return all artists with posts, and all comments in posts.
 </div>
 </div>
 
-<div id="outline-container-org23caa8e" class="outline-3">
-<h3 id="org23caa8e"><span class="section-number-3">14.3</span> <a href="#org23caa8e">Delete</a></h3>
+<div id="outline-container-org9229a8a" class="outline-3">
+<h3 id="org9229a8a"><span class="section-number-3">14.3</span> <a href="#org9229a8a">Delete</a></h3>
 <div class="outline-text-3" id="text-14-3">
 </div>
-<div id="outline-container-org6721daf" class="outline-4">
-<h4 id="org6721daf"><span class="section-number-4">14.3.1</span> <a href="#org6721daf">delete a child record</a></h4>
+<div id="outline-container-orgecebe0a" class="outline-4">
+<h4 id="orgecebe0a"><span class="section-number-4">14.3.1</span> <a href="#orgecebe0a">delete a child record</a></h4>
 <div class="outline-text-4" id="text-14-3-1">
 <p>
 Get a record, delete it.
@@ -3205,28 +3206,16 @@ Get a record, delete it.
 </div>
 </div>
 
-<div id="outline-container-org4794579" class="outline-4">
-<h4 id="org4794579"><span class="section-number-4">14.3.2</span> <a href="#org4794579">delete a parent record</a></h4>
+<div id="outline-container-orgb9036b3" class="outline-4">
+<h4 id="orgb9036b3"><span class="section-number-4">14.3.2</span> <a href="#orgb9036b3">delete a parent record</a></h4>
 <div class="outline-text-4" id="text-14-3-2">
 <p>
 If a parent record has no child record, it is safe to delete it.
 </p>
 
 <p>
-But, if a parent record has children records, you have to consider a question: <b><b>which action should be applied on its children records when deleting the parent record?</b></b>
+But, if a parent record has children records, you have to consider a question: <b><b>which action should be applied on its children records when deleting the parent record?</b></b> <a href="#the-options-of-references">The <code>:on_delete</code> option of <code>Ecto.Migration.references</code></a> provides the answer to this question.
 </p>
-
-<p>
-<a href="#the-options-of-references">The <code>:on_delete</code> option of <code>Ecto.Migration.references</code></a> provides the answer to this question.
-</p>
-
-<p>
-When using <code>:nothing</code> policy, Ecto will raise an constraint error when checking constraint. If you think the error is valuable for users, or it can be fixed by users, you can use one of following constraints to catch this error，then convert it to human-readable message:
-</p>
-<ul class="org-ul">
-<li><code>Ecto.Changeset.foreign_key_constraint</code></li>
-<li><code>Ecto.Changeset.no_assoc_constraint</code></li>
-</ul>
 
 <div class="warn">
 <p>
@@ -3238,13 +3227,17 @@ When using <code>:nothing</code> policy, Ecto will raise an constraint error whe
 </ul>
 
 </div>
+
+<p>
+When the relationship between parent and child is <code>has_*</code>, and <code>:nothing</code> policy of <code>:on_delete</code> option is used, Ecto will raise an constraint error when checking constraint. If the error is valuable for users, you can catch this error by <code>Ecto.Changeset.no_assoc_constraint</code> which convert error to human-readable message. Read <code>h Ecto.Changeset.no_assoc_constraint</code> for more details.
+</p>
 </div>
 </div>
 </div>
 </div>
 
-<div id="outline-container-orgcd5fce3" class="outline-2">
-<h2 id="orgcd5fce3"><span class="section-number-2">15</span> <a href="#orgcd5fce3">Transactions</a></h2>
+<div id="outline-container-orgb63e91e" class="outline-2">
+<h2 id="orgb63e91e"><span class="section-number-2">15</span> <a href="#orgb63e91e">Transactions</a></h2>
 <div class="outline-text-2" id="text-15">
 <p>
 Ecto supports transactions through <code>Repo.transcation</code>. There are 2 ways to call this function:
@@ -3255,8 +3248,8 @@ Ecto supports transactions through <code>Repo.transcation</code>. There are 2 wa
 </ul>
 </div>
 
-<div id="outline-container-org68ebeeb" class="outline-3">
-<h3 id="org68ebeeb"><span class="section-number-3">15.1</span> <a href="#org68ebeeb">with a function</a></h3>
+<div id="outline-container-orga1c6035" class="outline-3">
+<h3 id="orga1c6035"><span class="section-number-3">15.1</span> <a href="#orga1c6035">with a function</a></h3>
 <div class="outline-text-3" id="text-15-1">
 <div class="org-src-container">
 <pre class="src src-elixir"><span class="org-keyword">import</span> <span class="org-type">Ecto.Changeset</span>, <span class="org-elixir-atom">only:</span> [<span class="org-elixir-atom">change:</span> 2]
@@ -3290,8 +3283,8 @@ When a transaction fails:
 </div>
 </div>
 
-<div id="outline-container-orga5871be" class="outline-3">
-<h3 id="orga5871be"><span class="section-number-3">15.2</span> <a href="#orga5871be">with <code>Ecto.Multi</code></a></h3>
+<div id="outline-container-org3317a6e" class="outline-3">
+<h3 id="org3317a6e"><span class="section-number-3">15.2</span> <a href="#org3317a6e">with <code>Ecto.Multi</code></a></h3>
 <div class="outline-text-3" id="text-15-2">
 <p>
 <code>Ecto.Multi</code> groups database operations into a data structure. Compare to the plain function described above, it has some advantages:
@@ -3351,8 +3344,8 @@ When a transaction fails with an raised error:
 </div>
 </div>
 
-<div id="outline-container-orgdd7f8d4" class="outline-3">
-<h3 id="orgdd7f8d4"><span class="section-number-3">15.3</span> <a href="#orgdd7f8d4">which one should I use?</a></h3>
+<div id="outline-container-orgac560b6" class="outline-3">
+<h3 id="orgac560b6"><span class="section-number-3">15.3</span> <a href="#orgac560b6">which one should I use?</a></h3>
 <div class="outline-text-3" id="text-15-3">
 <blockquote>
 <p>
@@ -3370,16 +3363,16 @@ For all other cases, you should consider <code>Ecto.Multi</code>. It has a lot m
 </div>
 </div>
 
-<div id="outline-container-orgbdc2131" class="outline-3">
-<h3 id="orgbdc2131"><span class="section-number-3">15.4</span> <a href="#orgbdc2131">executing non-database operations</a></h3>
+<div id="outline-container-orgb2a2fd2" class="outline-3">
+<h3 id="orgb2a2fd2"><span class="section-number-3">15.4</span> <a href="#orgb2a2fd2">executing non-database operations</a></h3>
 <div class="outline-text-3" id="text-15-4">
 <p>
 Because Ecto don't know how to rollback non-database operations, you should run all of database operations first, then run non-database operations.
 </p>
 </div>
 
-<div id="outline-container-org77e1dc4" class="outline-4">
-<h4 id="org77e1dc4"><span class="section-number-4">15.4.1</span> <a href="#org77e1dc4">with a function</a></h4>
+<div id="outline-container-org5c9b996" class="outline-4">
+<h4 id="org5c9b996"><span class="section-number-4">15.4.1</span> <a href="#org5c9b996">with a function</a></h4>
 <div class="outline-text-4" id="text-15-4-1">
 <div class="note">
 <p>
@@ -3390,8 +3383,8 @@ Using <code>Ecto.Multi</code> for non-database operations is recommended.
 </div>
 </div>
 
-<div id="outline-container-org2cd4c69" class="outline-4">
-<h4 id="org2cd4c69"><span class="section-number-4">15.4.2</span> <a href="#org2cd4c69">with <code>Ecto.Multi</code></a></h4>
+<div id="outline-container-org99a20ad" class="outline-4">
+<h4 id="org99a20ad"><span class="section-number-4">15.4.2</span> <a href="#org99a20ad">with <code>Ecto.Multi</code></a></h4>
 <div class="outline-text-4" id="text-15-4-2">
 <p>
 Read <code>h Ecto.Multi.run</code> for more details.
@@ -3400,8 +3393,8 @@ Read <code>h Ecto.Multi.run</code> for more details.
 </div>
 </div>
 
-<div id="outline-container-org1ffb11a" class="outline-3">
-<h3 id="org1ffb11a"><span class="section-number-3">15.5</span> <a href="#org1ffb11a">introspecting <code>Ecto.Multi</code></a></h3>
+<div id="outline-container-org84bc556" class="outline-3">
+<h3 id="org84bc556"><span class="section-number-3">15.5</span> <a href="#org84bc556">introspecting <code>Ecto.Multi</code></a></h3>
 <div class="outline-text-3" id="text-15-5">
 <p>
 <code>%Ecto.Multi{}</code> is a data structure that can be introspected.
@@ -3418,8 +3411,8 @@ Ecto team provides a function to introspect operations stored in <code>%Ecto.Mul
 </div>
 </div>
 
-<div id="outline-container-orgae61212" class="outline-2">
-<h2 id="orgae61212"><span class="section-number-2">16</span> <a href="#orgae61212">Seeding</a></h2>
+<div id="outline-container-orgb01c43f" class="outline-2">
+<h2 id="orgb01c43f"><span class="section-number-2">16</span> <a href="#orgb01c43f">Seeding</a></h2>
 <div class="outline-text-2" id="text-16">
 <p>
 Seeding is a mechanism to populate tables with relevant data programatically.
@@ -3430,8 +3423,8 @@ In Elixir, we can create a script to do this, and make sure that seed scripts is
 </p>
 </div>
 
-<div id="outline-container-org50c567e" class="outline-3">
-<h3 id="org50c567e"><span class="section-number-3">16.1</span> <a href="#org50c567e">Handling uniqueness</a></h3>
+<div id="outline-container-org34b7e1b" class="outline-3">
+<h3 id="org34b7e1b"><span class="section-number-3">16.1</span> <a href="#org34b7e1b">Handling uniqueness</a></h3>
 <div class="outline-text-3" id="text-16-1">
 <p>
 You may handling uniqueness problem in this way:
@@ -3475,8 +3468,8 @@ PS: Choose PostgreSQL, everything will be fine.
 </div>
 </div>
 
-<div id="outline-container-org55cdb11" class="outline-3">
-<h3 id="org55cdb11"><span class="section-number-3">16.2</span> <a href="#org55cdb11">Populate data with Schema</a></h3>
+<div id="outline-container-org0e4a38d" class="outline-3">
+<h3 id="org0e4a38d"><span class="section-number-3">16.2</span> <a href="#org0e4a38d">Populate data with Schema</a></h3>
 <div class="outline-text-3" id="text-16-2">
 <p>
 Data can be inserted with Schema easily, even associated data.
@@ -3500,12 +3493,12 @@ Data can be inserted with Schema easily, even associated data.
 </div>
 </div>
 
-<div id="outline-container-orge403c31" class="outline-2">
-<h2 id="orge403c31"><span class="section-number-2">17</span> <a href="#orge403c31">Appendix</a></h2>
+<div id="outline-container-org2e29e35" class="outline-2">
+<h2 id="org2e29e35"><span class="section-number-2">17</span> <a href="#org2e29e35">Appendix</a></h2>
 <div class="outline-text-2" id="text-17">
 </div>
-<div id="outline-container-org936218f" class="outline-3">
-<h3 id="org936218f"><span class="section-number-3">17.1</span> <a href="#org936218f">Naming conventions</a></h3>
+<div id="outline-container-org4494243" class="outline-3">
+<h3 id="org4494243"><span class="section-number-3">17.1</span> <a href="#org4494243">Naming conventions</a></h3>
 <div class="outline-text-3" id="text-17-1">
 <ul class="org-ul">
 <li>Migration
@@ -3528,8 +3521,8 @@ Data can be inserted with Schema easily, even associated data.
 </div>
 </div>
 
-<div id="outline-container-orgb2da3bf" class="outline-3">
-<h3 id="orgb2da3bf"><span class="section-number-3">17.2</span> <a href="#orgb2da3bf">Related Mix tasks</a></h3>
+<div id="outline-container-org2963cbc" class="outline-3">
+<h3 id="org2963cbc"><span class="section-number-3">17.2</span> <a href="#org2963cbc">Related Mix tasks</a></h3>
 <div class="outline-text-3" id="text-17-2">
 <p>
 Repo related:
@@ -3583,36 +3576,177 @@ Common aliases:
 </div>
 </div>
 
-<div id="outline-container-org4b270e4" class="outline-3">
-<h3 id="org4b270e4"><span class="section-number-3">17.3</span> <a href="#org4b270e4">Schema related tips</a></h3>
+<div id="outline-container-org395101b" class="outline-3">
+<h3 id="org395101b"><span class="section-number-3">17.3</span> <a href="#org395101b">Schema related tips</a></h3>
 <div class="outline-text-3" id="text-17-3">
 </div>
-<div id="outline-container-orgdfe282d" class="outline-4">
-<h4 id="orgdfe282d"><span class="section-number-4">17.3.1</span> <a href="#orgdfe282d">#1</a></h4>
+<div id="outline-container-org5858e75" class="outline-4">
+<h4 id="org5858e75"><span class="section-number-4">17.3.1</span> <a href="#org5858e75">#1</a></h4>
 <div class="outline-text-4" id="text-17-3-1">
 <p>
-In Ecto, a table is not coupled to only one schema, we can create more than one schema for a table.
+In Ecto, a table is not coupled to only one schema, developers are allowed to create more than one schema for a table.
 </p>
 </div>
 </div>
 
-<div id="outline-container-orgcfd6954" class="outline-4">
-<h4 id="orgcfd6954"><span class="section-number-4">17.3.2</span> <a href="#orgcfd6954">#2</a></h4>
+<div id="outline-container-org0994ee2" class="outline-4">
+<h4 id="org0994ee2"><span class="section-number-4">17.3.2</span> <a href="#org0994ee2">#2</a></h4>
 <div class="outline-text-4" id="text-17-3-2">
 <p>
-In Ecto, a schema is not coupled to only one update policy, we can create more than one update policies for a schema. Each update policy has its own separate <code>changeset/2</code> function.
+In Ecto, a schema is not coupled to only one update policy, developers is allowed to create more than one update policies for a schema. Each update policy has its own function which is filled with functions provided by <code>Ecto.Changeset</code>.
 </p>
 </div>
 </div>
 </div>
 
-<div id="outline-container-orgdb2f7ae" class="outline-3">
-<h3 id="orgdb2f7ae"><span class="section-number-3">17.4</span> <a href="#orgdb2f7ae">Setting default value for fields?</a></h3>
+<div id="outline-container-org71dc009" class="outline-3">
+<h3 id="org71dc009"><span class="section-number-3">17.4</span> <a href="#org71dc009">About timestamps</a></h3>
 <div class="outline-text-3" id="text-17-4">
+<p>
+By default, Ecto use <code>:naive_datetime</code>. But, I recommend using <code>:utc_datetime</code> or <code>:utc_datetime_usec</code>.
+</p>
+
+<table>
+
+
+<colgroup>
+<col  class="org-left">
+
+<col  class="org-left">
+
+<col  class="org-left">
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="org-left">Migration Type</th>
+<th scope="col" class="org-left">PostgreSQL Data Type</th>
+<th scope="col" class="org-left">Elixir Type</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="org-left"><code>:utc_datetime_usec</code></td>
+<td class="org-left"><code>timestamp without time zone</code></td>
+<td class="org-left">DateTime</td>
+</tr>
+
+<tr>
+<td class="org-left"><code>:utc_datetime</code></td>
+<td class="org-left"><code>timestamp without time zone(0)</code></td>
+<td class="org-left">DateTime</td>
+</tr>
+
+<tr>
+<td class="org-left"><code>:naive_datetime_usec</code></td>
+<td class="org-left"><code>timestamp without time zone</code></td>
+<td class="org-left">NaiveDateTime</td>
+</tr>
+
+<tr>
+<td class="org-left"><code>:naive_datetime</code></td>
+<td class="org-left"><code>timestamp without time zone(0)</code></td>
+<td class="org-left">NaiveDateTime</td>
+</tr>
+</tbody>
+</table>
+
+<div class="question">
+<p>
+Q: What is the meaning of <code>(0)</code>?
+</p>
+
+<p>
+A: <code>(0)</code> means second precision. The microsecond part of timestamp is dropped.
+</p>
+
 </div>
-<div id="outline-container-org86c0904" class="outline-4">
-<h4 id="org86c0904"><span class="section-number-4">17.4.1</span> <a href="#org86c0904">set default value in database level</a></h4>
+</div>
+
+<div id="outline-container-orgf690f52" class="outline-4">
+<h4 id="orgf690f52"><span class="section-number-4">17.4.1</span> <a href="#orgf690f52">Use <code>:utc_datetime_usec</code> globally</a></h4>
 <div class="outline-text-4" id="text-17-4-1">
+<p>
+Apply on Migrations via configuration of Repo:
+</p>
+<div class="org-src-container">
+<pre class="src src-elixir">config <span class="org-elixir-atom">:paper</span>, <span class="org-type">Paper.Repo</span>, <span class="org-elixir-atom">migration_timestamps:</span> [<span class="org-elixir-atom">type:</span> <span class="org-elixir-atom">:utc_datetime_usec</span>]
+</pre>
+</div>
+
+<p>
+Apply on schemas according to <a href="https://hexdocs.pm/ecto/Ecto.Schema.html#module-schema-attributes">official docs</a>:
+</p>
+<div class="org-src-container">
+<pre class="src src-elixir"><span class="org-comment-delimiter"># </span><span class="org-comment">Define a module to be used as base</span>
+<span class="org-keyword">defmodule</span> <span class="org-type">Paper.Schema</span> <span class="org-keyword">do</span>
+  <span class="org-keyword">defmacro</span> __using__(<span class="org-constant">_</span>) <span class="org-keyword">do</span>
+    <span class="org-keyword">quote</span> <span class="org-keyword">do</span>
+      <span class="org-keyword">use</span> <span class="org-type">Ecto.Schema</span>
+      <span class="org-elixir-attribute">@timestamps_opts</span> [<span class="org-elixir-atom">type:</span> <span class="org-elixir-atom">:utc_datetime_usec</span>]
+    <span class="org-keyword">end</span>
+  <span class="org-keyword">end</span>
+<span class="org-keyword">end</span>
+
+<span class="org-comment-delimiter"># </span><span class="org-comment">Use MyApp.Schema to define new schemas</span>
+<span class="org-keyword">defmodule</span> <span class="org-type">Paper.CMS.Comment</span> <span class="org-keyword">do</span>
+  <span class="org-keyword">use</span> <span class="org-type">Paper.Schema</span>
+
+  schema <span class="org-string">"comments"</span> <span class="org-keyword">do</span>
+    timestamps()
+  <span class="org-keyword">end</span>
+<span class="org-keyword">end</span>
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org91103d0" class="outline-4">
+<h4 id="org91103d0"><span class="section-number-4">17.4.2</span> <a href="#org91103d0">Use <code>:utc_datetime_usec</code> locally</a></h4>
+<div class="outline-text-4" id="text-17-4-2">
+<p>
+Apply on Migrations:
+</p>
+<div class="org-src-container">
+<pre class="src src-elixir"><span class="org-keyword">defmodule</span> <span class="org-type">Paper.Repo.Migrations.CreateComments</span> <span class="org-keyword">do</span>
+  <span class="org-keyword">use</span> <span class="org-type">Ecto.Migration</span>
+
+  <span class="org-keyword">def</span> <span class="org-function-name">change</span> <span class="org-keyword">do</span>
+    create table(<span class="org-string">"comments"</span>) <span class="org-keyword">do</span>
+      <span class="org-comment-delimiter"># </span><span class="org-comment">...</span>
+
+      timestamps(<span class="org-elixir-atom">type:</span> <span class="org-elixir-atom">:utc_datetime_usec</span>)
+    <span class="org-keyword">end</span>
+  <span class="org-keyword">end</span>
+<span class="org-keyword">end</span>
+</pre>
+</div>
+
+<p>
+Apply on Schemas:
+</p>
+<div class="org-src-container">
+<pre class="src src-elixir"><span class="org-keyword">defmodule</span> <span class="org-type">Paper.CMS.Comment</span> <span class="org-keyword">do</span>
+  <span class="org-keyword">use</span> <span class="org-type">Ecto.Schema</span>
+
+  schema <span class="org-string">"comments"</span> <span class="org-keyword">do</span>
+    <span class="org-comment-delimiter"># </span><span class="org-comment">...</span>
+
+    timestamps(<span class="org-elixir-atom">type:</span> <span class="org-elixir-atom">:utc_datetime_usec</span>)
+  <span class="org-keyword">end</span>
+<span class="org-keyword">end</span>
+</pre>
+</div>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org3e5eb61" class="outline-3">
+<h3 id="org3e5eb61"><span class="section-number-3">17.5</span> <a href="#org3e5eb61">Setting default value for fields?</a></h3>
+<div class="outline-text-3" id="text-17-5">
+</div>
+<div id="outline-container-org09b4c3a" class="outline-4">
+<h4 id="org09b4c3a"><span class="section-number-4">17.5.1</span> <a href="#org09b4c3a">set default value in database level</a></h4>
+<div class="outline-text-4" id="text-17-5-1">
 <p>
 Set default value for columns by using <code>:default</code> option of <code>add</code> macro in <code>Ecto.Migration</code>.
 </p>
@@ -3630,9 +3764,9 @@ Furthermore, the default value set in this way is used when inserting new rows, 
 </div>
 </div>
 
-<div id="outline-container-orgba787db" class="outline-4">
-<h4 id="orgba787db"><span class="section-number-4">17.4.2</span> <a href="#orgba787db">set default value in application level</a></h4>
-<div class="outline-text-4" id="text-17-4-2">
+<div id="outline-container-orgcac268e" class="outline-4">
+<h4 id="orgcac268e"><span class="section-number-4">17.5.2</span> <a href="#orgcac268e">set default value in application level</a></h4>
+<div class="outline-text-4" id="text-17-5-2">
 <p>
 There're two ways to set default value in application level:
 </p>
@@ -3647,16 +3781,16 @@ Default values set by <code>:default</code> option will be evaluated at compilat
 
 <div class="note">
 <p>
-<code>Ecto.Changeset.put_change</code> or similar functions is preferred in this case.
+If you need dynamic values, <code>Ecto.Changeset.put_change</code> or similar functions is preferred.
 </p>
 
 </div>
 </div>
 </div>
 
-<div id="outline-container-org8a27f65" class="outline-4">
-<h4 id="org8a27f65"><span class="section-number-4">17.4.3</span> <a href="#org8a27f65">which one should I use?</a></h4>
-<div class="outline-text-4" id="text-17-4-3">
+<div id="outline-container-orgd9d6b26" class="outline-4">
+<h4 id="orgd9d6b26"><span class="section-number-4">17.5.3</span> <a href="#orgd9d6b26">which one should I use?</a></h4>
+<div class="outline-text-4" id="text-17-5-3">
 <p>
 If you have multiple applications using the same database, and:
 </p>
@@ -3676,17 +3810,17 @@ When possible, I prefer using schemas. Because in this way, I can reduce the fre
 </div>
 </div>
 
-<div id="outline-container-orgd6a689d" class="outline-3">
-<h3 id="orgd6a689d"><span class="section-number-3">17.5</span> <a href="#orgd6a689d">Commonly used constraints</a></h3>
-<div class="outline-text-3" id="text-17-5">
+<div id="outline-container-orgccadb99" class="outline-3">
+<h3 id="orgccadb99"><span class="section-number-3">17.6</span> <a href="#orgccadb99">Commonly used constraints</a></h3>
+<div class="outline-text-3" id="text-17-6">
 <p>
 We have known the usage of <code>unique_constraint/3</code>. In this section, we will introduce other commonly used constraints.
 </p>
 </div>
 
-<div id="outline-container-org1bfa9a5" class="outline-4">
-<h4 id="org1bfa9a5"><span class="section-number-4">17.5.1</span> <a href="#org1bfa9a5"><code>foreign_key_constraint/3</code></a></h4>
-<div class="outline-text-4" id="text-17-5-1">
+<div id="outline-container-org6d49b87" class="outline-4">
+<h4 id="org6d49b87"><span class="section-number-4">17.6.1</span> <a href="#org6d49b87"><code>foreign_key_constraint/3</code></a></h4>
+<div class="outline-text-4" id="text-17-6-1">
 <p>
 This function checks foreign key constraint in the given field.
 </p>
@@ -3726,9 +3860,9 @@ As you can see, using <code>foreign_key_contraint/3</code> when deleting a recor
 </div>
 </div>
 
-<div id="outline-container-org99c5661" class="outline-4">
-<h4 id="org99c5661"><span class="section-number-4">17.5.2</span> <a href="#org99c5661"><code>assoc_constraint/3</code></a></h4>
-<div class="outline-text-4" id="text-17-5-2">
+<div id="outline-container-org5839325" class="outline-4">
+<h4 id="org5839325"><span class="section-number-4">17.6.2</span> <a href="#org5839325"><code>assoc_constraint/3</code></a></h4>
+<div class="outline-text-4" id="text-17-6-2">
 <p>
 This function checks if the associated field exists. It is generally used when inserting or updating record.
 </p>
@@ -3750,9 +3884,9 @@ When inserting / updating a post, check if the foreign key is valid:
 </div>
 </div>
 
-<div id="outline-container-orge02a1d5" class="outline-4">
-<h4 id="orge02a1d5"><span class="section-number-4">17.5.3</span> <a href="#orge02a1d5"><code>no_assoc_constraint/3</code></a></h4>
-<div class="outline-text-4" id="text-17-5-3">
+<div id="outline-container-org3a5631f" class="outline-4">
+<h4 id="org3a5631f"><span class="section-number-4">17.6.3</span> <a href="#org3a5631f"><code>no_assoc_constraint/3</code></a></h4>
+<div class="outline-text-4" id="text-17-6-3">
 <p>
 Check the associated field doesn't exist. It is generally used when deleting record.
 </p>
@@ -3781,28 +3915,36 @@ When deleting a record, ensure that no child exists:
 </div>
 </div>
 
-<div id="outline-container-org5c8940e" class="outline-3">
-<h3 id="org5c8940e"><span class="section-number-3">17.6</span> <a href="#org5c8940e">Don't use constraints all the time</a></h3>
-<div class="outline-text-3" id="text-17-6">
+<div id="outline-container-orgdc5970c" class="outline-3">
+<h3 id="orgdc5970c"><span class="section-number-3">17.7</span> <a href="#orgdc5970c">Don't use constraints all the time</a></h3>
+<div class="outline-text-3" id="text-17-7">
 <blockquote>
 <p>
 Using changeset constraints only makes sense if the error message can be something the user can take action on.
 </p>
+
+<p>
+&#x2013; Programming Ecto
+</p>
 </blockquote>
 
 <p>
-Constraints is useful when converting error into human-readable messages. But you don't have to use them all the time.
+Constraints are useful when converting errors into human-readable messages. But you don't have to use them all the time.
 </p>
 
 <p>
-Actually, our above example isn't very well. In a blogging system, every post should have a author. If not, it can only be a bug in our application or a data-integrity issue. In such case, the user can do nothing to fix the error, so crashing is the best option. You shouldn't convert such kind of error into human-readable messages any more.
+Give it an example.
+</p>
+
+<p>
+In our blogging system, every comment belongs to a post. If not, it can only be a bug in our application or a data-integrity issue. In such case, the user can do nothing to fix the error, so crashing is the best option. You shouldn't convert such kind of error into human-readable messages any more.
 </p>
 </div>
 </div>
 </div>
 
-<div id="outline-container-org8e6b994" class="outline-2">
-<h2 id="org8e6b994"><span class="section-number-2">18</span> <a href="#org8e6b994">License</a></h2>
+<div id="outline-container-org8f9775f" class="outline-2">
+<h2 id="org8f9775f"><span class="section-number-2">18</span> <a href="#org8f9775f">License</a></h2>
 <div class="outline-text-2" id="text-18">
 <p>
 Except the quotes, the rest parts of this book are restricted by <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en">CC BY-NC-SA 4.0</a>.
