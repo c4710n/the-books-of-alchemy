@@ -1722,19 +1722,15 @@ Hope you guys like it!
 *** delete a parent record
     If a parent record has no child record, it is safe to delete it.
 
-    But, if a parent record has children records, you have to consider a question: **which action should be applied on its children records when deleting the parent record?**
-
-    [[#the-options-of-references][The =:on_delete= option of =Ecto.Migration.references=]] provides the answer to this question.
-
-    When using =:nothing= policy, Ecto will raise an constraint error when checking constraint. If you think the error is valuable for users, or it can be fixed by users, you can use one of following constraints to catch this error，then convert it to human-readable message:
-    + =Ecto.Changeset.foreign_key_constraint=
-    + =Ecto.Changeset.no_assoc_constraint=
+    But, if a parent record has children records, you have to consider a question: **which action should be applied on its children records when deleting the parent record?** [[#the-options-of-references][The =:on_delete= option of =Ecto.Migration.references=]] provides the answer to this question.
 
     #+begin_warn
     =has_one= / =has_many= / =many_to_many= in =Ecto.Schema= provide =:on_delete= option, too. But, you **SHOULD NEVER USE THEM**. Because these options:
     + CAN NOT guarantee database integrity.
     + only triggered by =Ecto.Repo.delete/2=, not including =Ecto.Repo.delete_all/2=.
     #+end_warn
+
+    When the relationship between parent and child is =has_*=, and =:nothing= policy of =:on_delete= option is used, Ecto will raise an constraint error when checking constraint. If the error is valuable for users, you can catch this error by =Ecto.Changeset.no_assoc_constraint= which convert error to human-readable message. Read =h Ecto.Changeset.no_assoc_constraint= for more details.
 
 * Transactions
   Ecto supports transactions through =Repo.transcation=. There are 2 ways to call this function:
@@ -1912,23 +1908,26 @@ Hope you guys like it!
 
 ** Schema related tips
 *** #1
-    In Ecto, a table is not coupled to only one schema, we can create more than one schema for a table.
+    In Ecto, a table is not coupled to only one schema, developers are allowed to create more than one schema for a table.
 
 *** #2
-    In Ecto, a schema is not coupled to only one update policy, we can create more than one update policies for a schema. Each update policy has its own separate =changeset/2= function.
+    In Ecto, a schema is not coupled to only one update policy, developers is allowed to create more than one update policies for a schema. Each update policy has its own function which is filled with functions provided by =Ecto.Changeset=.
 
-** About timestamps                                                :noexport:
-   | Migration Type         | Postgres type                    | Store microseconds? | Support DateTime functions? | Support NaiveDateTime functions? |
-   |------------------------+----------------------------------+---------------------+-----------------------------+----------------------------------|
-   | =:utc_datetime_usec=   | =timestamp without time zone=    | Yes                 | Yes                         | Yes                              |
-   | =:naive_datetime_usec= | =timestamp without time zone=    | Yes                 | No                          | Yes                              |
-   | =:utc_datetime=        | =timestamp without time zone(0)= | No                  | Yes                         | Yes                              |
-   | =:naive_datetime=      | =timestamp without time zone(0)= | No                  | No                          | Yes                              |
+** About timestamps
+   By default, Ecto use =:naive_datetime=. But, I recommend using =:utc_datetime= or =:utc_datetime_usec=.
 
-   By default, Ecto use :naive_datetime and don't preserve microsecond information.
+   | Migration Type         | PostgreSQL Data Type             | Elixir Type   |
+   |------------------------+----------------------------------+---------------|
+   | =:utc_datetime_usec=   | =timestamp without time zone=    | DateTime      |
+   | =:utc_datetime=        | =timestamp without time zone(0)= | DateTime      |
+   | =:naive_datetime_usec= | =timestamp without time zone=    | NaiveDateTime |
+   | =:naive_datetime=      | =timestamp without time zone(0)= | NaiveDateTime |
 
-*** What is the meaning of =(0)=?
-    =(0)= means that fractional seconds are not stored.
+   #+begin_question
+   Q: What is the meaning of =(0)=?
+
+   A: =(0)= means second precision. The microsecond part of timestamp is dropped.
+   #+end_question
 
 *** Use =:utc_datetime_usec= globally
     Apply on Migrations via configuration of Repo:
@@ -2005,7 +2004,7 @@ Hope you guys like it!
     Default values set by =:default= option will be evaluated at compilation time, so you shouldn't use them if you need dynamic values.
 
     #+begin_note
-    =Ecto.Changeset.put_change= or similar functions is preferred in this case.
+    If you need dynamic values, =Ecto.Changeset.put_change= or similar functions is preferred.
     #+end_note
 
 *** which one should I use?
@@ -2081,11 +2080,15 @@ Hope you guys like it!
 ** Don't use constraints all the time
    #+begin_quote
    Using changeset constraints only makes sense if the error message can be something the user can take action on.
+
+   -- Programming Ecto
    #+end_quote
 
-   Constraints is useful when converting error into human-readable messages. But you don't have to use them all the time.
+   Constraints are useful when converting errors into human-readable messages. But you don't have to use them all the time.
 
-   Actually, our above example isn't very well. In a blogging system, every post should have a author. If not, it can only be a bug in our application or a data-integrity issue. In such case, the user can do nothing to fix the error, so crashing is the best option. You shouldn't convert such kind of error into human-readable messages any more.
+   Give it an example.
+
+   In our blogging system, every comment belongs to a post. If not, it can only be a bug in our application or a data-integrity issue. In such case, the user can do nothing to fix the error, so crashing is the best option. You shouldn't convert such kind of error into human-readable messages any more.
 
 * License
   Except the quotes, the rest parts of this book are restricted by [[https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en][CC BY-NC-SA 4.0]].
