@@ -1513,7 +1513,7 @@ Hope you guys like it!
 ** Last
    Read more at =h Ecto.Query=.
 
-* Associations
+* Association
   #+begin_quote
   Relational Database Management System like PostgreSQL does a lot of works to help developers define and enforce the relationships between tables.
 
@@ -1524,15 +1524,26 @@ Hope you guys like it!
 
   So far, we have talked about data without associations. Now, let's introduce data with associations.
 
-  In this chapter, I will use the associtaion between authors and posts as the example:
+  In this chapter, we will use the associtaion between authors and posts as the example:
   + one author has many posts.
   + one post belongs to one author.
 
-  And, records in *authors* table is called as parent records, and records in *posts* table is called as children records.
+  And, records in *authors* table are called as parent records, and records in *posts* table are called as children records.
+
+  #+begin_question
+  Q: How to distinguish parent from child?
+
+  A: At schema level, the schema that calls =has_*= is the parent schema, the one calls =belongs_to= is the child schema. At database level, the table contains foreign key is the child table, another table is the parent table.
+  #+end_question
+
+** What is association?
+   Ecto supports not only relational database, but also other types of data sources. Because of that, it's not suitable to describe the relationship between data sources by the terminology - /relationship/ which has been used in relational database.
+
+   Association is the term which is used by Ecto to describe the relationship between data sources. You can think it as a superset of /relationship/.
 
 ** Insert / Update
    When inserting or updating records, there's two questions should be answered first:
-   1. what is the type of records? parent or child?
+   1. What is the type of records? parent or child?
    2. If the type is child, how many children records do you want to insert or update?
 
 *** insert / update a parent record
@@ -1590,12 +1601,16 @@ Hope you guys like it!
 *** update a child record
     Get a record, update it with =Ecto.Changeset=.
 
-*** insert children records as a whole
+*** handling children records as a whole
 **** handling internal data
-     For handling internal data, we will use =Ecto.Changeset.put_assoc=. It takes a changeset, the name of association, and the records we want to put into the association:
+     For handling internal data, we will use =Ecto.Changeset.put_assoc=.
+
+     =Ecto.Changeset.put_assoc= works by associating existing children records to current record.
+
+     It takes a changeset, the name of association, and the records we want to put into the association:
      #+begin_src elixir
      Repo.get_by(Author, name: "Spike")
-     |> Repo.preload(:posts)
+     |> Repo.preload(:posts) # preload is required
      |> change()
      |> put_assoc(:posts, [
        %Post{title: "Software Design", body: "..."},
@@ -1604,7 +1619,7 @@ Hope you guys like it!
      |> Repo.update!()
      #+end_src
 
-     Before making changes to existing associations, the association must be preloaded, just like above example code. But, if the parent record isn't inserted to database, preloading association can be ignored, such as:
+     Before making changes to existing associations, the association must be preloaded, just like above example code. But, if the parent record hasn't persisted to database, preloading association can be ignored, such as:
      #+begin_src elixir
      %Author{name: "Vicious"}
      |> change()
@@ -1618,50 +1633,60 @@ Hope you guys like it!
      Read more details at =h Ecto.Changeset.put_assoc=.
 
 **** handling external data
-     For handling external data, we will use =Ecto.Changeset.cast_assoc=. It takes a changeset and the name of association.
+     For handling external data, we will use =Ecto.Changeset.cast_assoc=.
 
-     Moreover, a =changeset= function in associated schema is required by default, you can specify the function name with =with:= option.
+     =Ecto.Changeset.cast_assoc= works by comparing following data, and generate proper operations.
+     + current children records which are preloaded from database.
+     + parameters for given association which are retrieved from =changeset.params=.
 
+     It takes a changeset, the name of association, and the optional options:
      #+begin_src elixir
      params = %{
-       "name" => "Monica",
        "posts" => [
-         %{"title" => "Hello World", "body" => ""},
-         %{"title" => "Hello World", "body" => ""}
+         %{"title" => "Hello World", "body" => "..."},
+         %{"title" => "Hello World", "body" => "..."}
        ]
      }
 
-     %Author{}
-     |> cast(params, [:name])
+     Repo.get_by(Author, name: "Spike")
+     |> Repo.preload(:posts)
+     |> change()
+     |> cast(params, [])
      |> cast_assoc(:posts)
-     |> Repo.insert!()
+     |> Repo.update!()
      #+end_src
 
      Read more details at =h Ecto.Changeset.cast_assoc=.
 
-*** update children records as a whole
-    When updating children records as a whole, we are still using =Ecto.Changeset.put_assoc= and =Ecto.Changeset.cast_assoc=.
+**** handling records which are replaced
+     When handling children records as a whole, we should consider a question: *Which action should be applied on children records which are replaced?*
 
-    But, we should consider a question: *When updating, which action should be applied on children records which are replaced?*
+     #+begin_quote
+     What is meaning of _being replaced_?
 
-    #+begin_quote
-    What is meaning of _being replaced_?
+     Imagine a author has many posts where the posts has IDs 1, 2 and 3. If you call =cast_assoc/3= passing only the IDs 1 and 2. Ecto will consider 3 is being _replaced_.
 
-    Imagine a author has many posts where the posts has IDs 1, 2 and 3. If you call =cast_assoc/3= passing only the IDs 1 and 2. Ecto will consider 3 is being _replaced_.
+     -- [[https://hexdocs.pm/ecto/3.4.4/Ecto.Changeset.html#module-the-on_replace-option][Official Doc of =Ecto.Changeset=]]
+     #+end_quote
 
-    -- [[https://hexdocs.pm/ecto/3.4.4/Ecto.Changeset.html#module-the-on_replace-option][Official Doc of =Ecto.Changeset=]]
-    #+end_quote
+     =Ecto.Schema.*= provides =:on_replace= option to answer this question:
+     + =has_one= has =:raise= / =:mark_as_invaild= / =:nilify= / =:update= / =:delete=.
+     + =has_many= has =:raise= / =:mark_as_invaild= / =:nilify= / =:delete=.
+     + =many_to_many= has  =:raise= / =:mark_as_invaild= / =:delete=.
 
-    =Ecto.Schema.*= provides =:on_replace= option to answer this question:
-    + =has_one= has =:raise= / =:mark_as_invaild= / =:nilify= / =:update= / =:delete=.
-    + =has_many= has =:raise= / =:mark_as_invaild= / =:nilify= / =:delete=.
-    + =many_to_many= has  =:raise= / =:mark_as_invaild= / =:delete=.
+     #+begin_note
+     =:on_replace= policy is only triggered when calling =Ecto.Changeset.put_assoc= and =Ecto.Changeset.cast_assoc=. If you don't use them, it's not necessary to set this option.
+     #+end_note
 
-    #+begin_note
-    =:on_replace= policy is triggered when calling =Ecto.Changeset.put_assoc= and =Ecto.Changeset.cast_assoc=.
-    #+end_note
+     #+begin_note
+     No matter which =:on_replace= policy we choose, Ecto will compare /the records or parameters we passed in/ with /the persisted children records in database/.
 
-    Read more details in the *Associations, embeds and on replace* section of =h Ecto.Changeset=.
+     As we said before, Ecto doesn't support lazy loading. /the persisted children records in database/ have to be loaded manually.
+
+     This is why we need to preload association before calling =Ecto.Changeset.put_assoc= and =Ecto.Changeset.cast_assoc=.
+     #+end_note
+
+     Read more details in the *Associations, embeds and on replace* section of =h Ecto.Changeset=.
 
 ** Query
 *** load associations
@@ -1692,6 +1717,16 @@ Hope you guys like it!
     #+begin_src elixir
     query = from a in Author,
       join: p in assoc(a, :posts),
+      where: p.title == "Hello World",
+      preload: [posts: p]
+
+    Repo.all(query)
+    #+end_src
+
+    #+begin_src elixir
+    query = from a in Author,
+      join: p in Post,
+      on: a.id == p.author_id,
       where: p.title == "Hello World",
       preload: [posts: p]
 
@@ -1732,6 +1767,51 @@ Hope you guys like it!
 
     When the relationship between parent and child is =has_*=, and =:nothing= policy of =:on_delete= option is used, Ecto will raise an constraint error when checking constraint. If the error is valuable for users, you can catch this error by =Ecto.Changeset.no_assoc_constraint= which convert error to human-readable message. Read =h Ecto.Changeset.no_assoc_constraint= for more details.
 
+* Seeding
+  Seeding is a mechanism to populate tables with relevant data programatically.
+
+  In Elixir, we can create a script to do this, and make sure that seed scripts is idempotent, because they may be executed multiple times.
+
+** Handling uniqueness
+   You may handling uniqueness problem in this way:
+   #+begin_src elixir
+   Repo.get_by(Tag, name: "Tech") || Repo.insert!(%Tag{name: "Tech"})
+   #+end_src
+
+   But, above operation is unsafe - not an atomic operation. In certain conditions, Ecto will try to insert two same data at the same time, which will cause a database constraint error.
+
+   Instead, we shouldn't handle this uniqueness problem by ourselves. Just insert the data, and let database manage the conflict data - this feature is known as *upsert*.
+
+   In Ecto, the *upsert* feature is implemented as =:on_conflict= option of =Repo.insert!=. A possible example would be:
+   #+begin_src elixir
+   # ignore conflicting data
+   Repo.insert!(%Tag{name: "Tech", on_conflict: :nothing})
+   #+end_src
+
+   There are lots of available values for =:on_conflict= option, read more details at =h Repo.insert=.
+
+   #+begin_note
+   *Upsert* feature is often database specific, make sure that your database supports it before using.
+
+   PS: Choose PostgreSQL, everything will be fine.
+   #+end_note
+
+** Populate data with Schema
+   Data can be inserted with Schema easily, even associated data.
+
+   #+begin_src elixir
+   Repo.insert(
+     %Author{
+       name: "Jet",
+       posts: [
+         %Post{
+           title: "Hello World!",
+           body: "Here you go!"
+         }
+       ]
+     }
+   )
+   #+end_src
 * Transactions
   Ecto supports transactions through =Repo.transcation=. There are 2 ways to call this function:
   + with a function containing the operations will be run within the transaction.
@@ -1819,52 +1899,6 @@ Hope you guys like it!
    Ecto team discourages inspecting or manipulating =%Ecto.Multi{}= directly, because the exact structure is subject to change.
 
    Ecto team provides a function to introspect operations stored in =%Ecto.Multi{}=, read more details at =Ecto.Multi.to_list/1=.
-
-* Seeding
-  Seeding is a mechanism to populate tables with relevant data programatically.
-
-  In Elixir, we can create a script to do this, and make sure that seed scripts is idempotent, because they may be executed multiple times.
-
-** Handling uniqueness
-   You may handling uniqueness problem in this way:
-   #+begin_src elixir
-   Repo.get_by(Tag, name: "Tech") || Repo.insert!(%Tag{name: "Tech"})
-   #+end_src
-
-   But, above operation is unsafe - not an atomic operation. In certain conditions, Ecto will try to insert two same data at the same time, which will cause a database constraint error.
-
-   Instead, we shouldn't handle this uniqueness problem by ourselves. Just insert the data, and let database manage the conflict data - this feature is known as *upsert*.
-
-   In Ecto, the *upsert* feature is implemented as =:on_conflict= option of =Repo.insert!=. A possible example would be:
-   #+begin_src elixir
-   # ignore conflicting data
-   Repo.insert!(%Tag{name: "Tech", on_conflict: :nothing})
-   #+end_src
-
-   There are lots of available values for =:on_conflict= option, read more details at =h Repo.insert=.
-
-   #+begin_note
-   *Upsert* feature is often database specific, make sure that your database supports it before using.
-
-   PS: Choose PostgreSQL, everything will be fine.
-   #+end_note
-
-** Populate data with Schema
-   Data can be inserted with Schema easily, even associated data.
-
-   #+begin_src elixir
-   Repo.insert(
-     %Author{
-       name: "Jet",
-       posts: [
-         %Post{
-           title: "Hello World!",
-           body: "Here you go!"
-         }
-       ]
-     }
-   )
-   #+end_src
 
 * Appendix
 ** Naming conventions
