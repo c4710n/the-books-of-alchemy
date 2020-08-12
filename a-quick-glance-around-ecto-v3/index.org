@@ -1594,6 +1594,7 @@ Hope you guys like it!
 
     %Post{title: "Hello world", body: ""}
     |> change()
+    # It is same with =Ecto.Changeset.put_assoc=, but more verbose.
     |> put_change(:author_id, author.id)
     |> Repo.insert!()
     #+end_src
@@ -1946,6 +1947,29 @@ Hope you guys like it!
 
 *** #2
     In Ecto, a schema is not coupled to only one update policy, developers is allowed to create more than one update policies for a schema. Each update policy has its own function which is filled with functions provided by =Ecto.Changeset=.
+
+** Adding Indexes
+   Although adding indexes makes insertions become slower, but it makes queries faster. So, in general applications(more queries than writes), it is still a good idea for adding it.
+
+   Generally, indexes are added to following columns:
+   + primary keys
+   + foreign keys
+   + columns need to be lookup
+   + columns need to be sorted
+   + columns which are used with =GROUP BY=
+   + ...
+
+   By default, indexes of primary keys are created by Ecto automatically. But, indexes for foreign keys and other columns must be created by using =Ecto.Migration.index= manually.
+
+   Common indexes:
+   + unique indexes
+   + sorted indexes
+   + partial indexes
+   + covering indexes
+
+   Read more at:
+   + [[http://rny.io/elixir/ecto/postgresql/2015/08/31/postgresql-indexing-with-ecto.html][PostgreSQL indexing with Ecto]]
+   + [[https://www.postgresql.org/docs/12/indexes.html][PostgreSQL - Chapter 11. Indexes]]
 
 ** About timestamps
    By default, Ecto use =:naive_datetime=. But, I recommend using =:utc_datetime= or =:utc_datetime_usec=.
