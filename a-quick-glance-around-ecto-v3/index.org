@@ -1026,6 +1026,14 @@ Hope you guys like it!
     Unlike validations, constraints won't run before hitting database. Instead, they run when Ecto accepts constraint errors returned from database.
     #+end_note
 
+    #+begin_note
+    Related terminologies:
+    + constraint: an explicit constraint in database level. Generally, it is defined via migrations.
+    + constraint error: the =Ecto.ConstraintError=. It occurs when Ecto detecting a constraint problem issued by database.
+    + changeset constraint: an annotation added to the changeset that allows Ecto to convert constraint errors into changeset error messages.
+    + changeset error messages: readable error messages for users.
+    #+end_note
+
 **** defining database constraints
      Constraints are enforced by database. Because of that, they should be defined in database level.
 
@@ -1773,7 +1781,7 @@ Hope you guys like it!
 
   In Elixir, we can create a script to do this, and make sure that seed scripts is idempotent, because they may be executed multiple times.
 
-** Handling uniqueness
+** Handle uniqueness with upsert
    You may handling uniqueness problem in this way:
    #+begin_src elixir
    Repo.get_by(Tag, name: "Tech") || Repo.insert!(%Tag{name: "Tech"})
@@ -1796,6 +1804,18 @@ Hope you guys like it!
 
    PS: Choose PostgreSQL, everything will be fine.
    #+end_note
+
+** upsert with returning the record
+   =on_conflict: :nothing= will only return the struct containing conflict fields. If you insert a tag with specified name, and want to get the tag no matter it's conflict or not, use following code:
+   #+begin_src elixir
+   # force update on conflict record, which returns the struct with all fields.
+   Repo.insert(
+     %Tag{name: name},
+     on_conflict: {:replace, [:name]},
+     conflict_target: :name,
+     returning: true
+   )
+   #+end_src
 
 ** Populate data with Schema
    Data can be inserted with Schema easily, even associated data.
