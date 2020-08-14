@@ -2166,7 +2166,7 @@ Hope you guys like it!
 
    Give it an example.
 
-   In our blogging system, every comment belongs to a post. If not, it can only be a bug in our application or a data-integrity issue. In such case, the user can do nothing to fix the error, so crashing is the best option. You shouldn't convert such kind of error into human-readable messages any more.
+   In our blogging system, every comment belongs to a post. If not, it can only be a bug in our application or a data-integrity issue. In such case, the user can do nothing to fix the error, so crashing is the best option. You shouldn't convert such kind of errors into human-readable messages any more. Although you convert them, and notify users, users can do nothing to fix these errors.
 
 * License
   Except the quotes, the rest parts of this book are restricted by [[https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en][CC BY-NC-SA 4.0]].
