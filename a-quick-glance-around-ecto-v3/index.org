@@ -560,7 +560,7 @@ Hope you guys like it!
     Generally, Ecto can infer the rollback behavior of =change/0= function in the migrations. When it can't, consider using =up/0= and =down/0=.
 
 *** should I editing an existing migration?
-    If the migration hasn't been commited to VCS, you are free to edit an existing one.
+    If the migration hasn't been committed to VCS, you are free to edit an existing one.
 
     If the migration has been committed and you are not the only one in the team, you'd better creating a new one.
 
@@ -2167,6 +2167,14 @@ Hope you guys like it!
    Give it an example.
 
    In our blogging system, every comment belongs to a post. If not, it can only be a bug in our application or a data-integrity issue. In such case, the user can do nothing to fix the error, so crashing is the best option. You shouldn't convert such kind of errors into human-readable messages any more. Although you convert them, and notify users, users can do nothing to fix these errors.
+
+** Common use cases of Ecto
+   + Data validation
+   + Database interaction
+
+   In order to split the concerns, official team created two packages:
+   + =ecto=
+   + =ecto_sql=
 
 * License
   Except the quotes, the rest parts of this book are restricted by [[https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en][CC BY-NC-SA 4.0]].
