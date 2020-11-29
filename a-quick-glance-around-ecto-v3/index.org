@@ -42,7 +42,10 @@ Hope you guys like it!
 * Introduction
   This book will act as a map of large numbers of docs, and guide you to glance over the main features of Ecto v3 by trying to construct the database layer of a blogging system.
 
-  If you want to have a deep insight of Ecto or more complicated use cases, you can read more in [[https://hexdocs.pm/ecto/][Ecto's Docs]], [[https://pragprog.com/book/wmecto/programming-ecto][Programming Ecto]] or [[https://dashbit.co/ebooks/the-little-ecto-cookbook][The Little Ecto Cookbook]].
+  If you want to have a deep insight of Ecto or more complicated use cases, you can read more in following materials:
+  + [[https://hexdocs.pm/ecto/][Ecto's Docs]]
+  + [[https://pragprog.com/book/wmecto/programming-ecto][Programming Ecto]]
+  + [[https://dashbit.co/ebooks/the-little-ecto-cookbook][The Little Ecto Cookbook]]
 
   #+begin_question
   Why do you take a blogging system as the example?
@@ -138,60 +141,60 @@ Hope you guys like it!
 
 ** Setting up a Repo
 *** running a Mix task
-   #+begin_quote
-   You may be wondering what a Repo is. Now, just think it as a normal Elixir module. We will explain it later.
-   #+end_quote
+    #+begin_quote
+    You may be wondering what a Repo is. Now, just think it as a normal Elixir module. We will explain it later.
+    #+end_quote
 
-   Generating a Repo:
-   #+begin_src sh
-   $ mix ecto.gen.repo -r Paper.Repo
-   #+end_src
+    Generating a Repo:
+    #+begin_src sh
+    $ mix ecto.gen.repo -r Paper.Repo
+    #+end_src
 
-   Above command will output:
-   #+begin_src text
-   ,* creating lib/paper
-   ,* creating lib/paper/repo.ex
-   ,* creating config/config.exs
-   Don't forget to add your new repo to your supervision tree
-   (typically in lib/paper/application.ex):
+    Above command will output:
+    #+begin_src text
+    ,* creating lib/paper
+    ,* creating lib/paper/repo.ex
+    ,* creating config/config.exs
+    Don't forget to add your new repo to your supervision tree
+    (typically in lib/paper/application.ex):
 
-       {Paper.Repo, []}
+    {Paper.Repo, []}
 
-   And to add it to the list of ecto repositories in your
-   configuration files (so Ecto tasks work as expected):
+    And to add it to the list of ecto repositories in your
+    configuration files (so Ecto tasks work as expected):
 
-       config :paper,
-         ecto_repos: [Paper.Repo]
-   #+end_src
+    config :paper,
+    ecto_repos: [Paper.Repo]
+    #+end_src
 
-   As you can see, it generates =lib/paper/repo.ex=:
-   #+begin_src elixir
-   defmodule Paper.Repo do
-     use Ecto.Repo,
-       otp_app: :paper,
-       adapter: Ecto.Adapters.Postgres
-   end
-   #+end_src
+    As you can see, it generates =lib/paper/repo.ex=:
+    #+begin_src elixir
+    defmodule Paper.Repo do
+      use Ecto.Repo,
+        otp_app: :paper,
+        adapter: Ecto.Adapters.Postgres
+    end
+    #+end_src
 
-   #+begin_note
-   About the options:
-   + =:otp_app= option indicates the location of Ecto configuration.
-   + =:adapter= option indicates the database adapter.
-   #+end_note
+    #+begin_note
+    About the options:
+    + =:otp_app= option indicates the location of Ecto configuration.
+    + =:adapter= option indicates the database adapter.
+    #+end_note
 
 *** adding rest configurations
-   Edit =lib/paper/application.ex= for adding Repo to supervision tree:
-   #+begin_src elixir
-   # ...
-   def start(_type, _args) do
-     children = [
-       # add repo to supervision tree
-       {Paper.Repo, []}
-     ]
-     # ...
-   end
-   # ...
-   #+end_src
+    Edit =lib/paper/application.ex= for adding Repo to supervision tree:
+    #+begin_src elixir
+    # ...
+    def start(_type, _args) do
+      children = [
+        # add repo to supervision tree
+        {Paper.Repo, []}
+      ]
+      # ...
+    end
+    # ...
+    #+end_src
 
     Edit =config/config.exs= for making Ecto related Mix tasks work as expected:
     #+begin_src elixir
@@ -303,9 +306,11 @@ Hope you guys like it!
    After executing above command, a new migration file containing a module with empty =change= function will be generated in =priv/repo/migrations=.
 
    In relational database, there are 3 types of relationships:
-   + on-to-one (1-1)
-   + one-to-many (1-N)
-   + many-to-many (N-N)
+   | name         | abbr. |
+   |--------------+-------|
+   | one-to-one   | 1-1   |
+   | one-to-many  | 1-N   |
+   | many-to-many | N-N   |
 
    As we saw in [[#sample-data-model][Sample Data Model]], we have four relationships, and they cover all types of relationships:
    + the relationship between authors and posts is one-to-many.
@@ -318,13 +323,11 @@ Hope you guys like it!
    #+begin_note
    When creating a migration, we generally define following things:
    1. table names
-   2. columns
-   3. relationships
-   4. default values
-   5. indexes
+   2. columns (name, type/reference, default value, null)
+   3. indexes
    #+end_note
 
-*** build relation ship between authors and posts (1-N)
+*** build relationship between authors and posts (1-N)
     As we said above:
     + one author has many posts.
     + one post belongs to one author.
@@ -491,12 +494,20 @@ Hope you guys like it!
    + ...
 
    Besides, Ecto also maps primitive types to the appropriate database data types by the database adapters. Such as:
-   + map =:string= to =:varchar=
+   + map =:string= to [[https://github.com/elixir-ecto/ecto_sql/blob/eda193965ef112cd0e8f584c58a2efa751655a3e/lib/ecto/adapters/postgres/connection.ex#L1066][=:varchar(255)=]]
    + map =:binary= to =:bytea=
    + ...
 
    #+begin_note
    Ecto defines the mapping at =ecto_sql= package. For PostgreSQL, the details can be found [[https://github.com/elixir-ecto/ecto_sql/blob/eda193965ef112cd0e8f584c58a2efa751655a3e/lib/ecto/adapters/postgres/connection.ex#L1181][here]].
+   #+end_note
+
+   #+begin_note
+   When using Ecto with PostgreSQL, I would like to use =:varchar= and =:text=, instead of =:string=.
+   + =:varchar= for one line text
+   + =:text= for multiple lines text
+
+   In PostgreSQL, the performance of them is the same.
    #+end_note
 
 ** Adding index
@@ -532,7 +543,7 @@ Hope you guys like it!
 
 *** the =:on_update= option
     #+begin_note
-    This option isn't used frequently.
+    Because primary key won't be changed after the record has been created, this option isn't used frequently.
     #+end_note
 
     The =:on_update= option specifies the behavior of referencing rows when the column of a referenced rows is updated. Following is the available values.
@@ -579,7 +590,7 @@ Hope you guys like it!
    The general lifecyle of queries looks like:
    1. All the queries are submitted to the Repository.
    2. The Repository transforms the queries and send them to data store.
-   3. The Repository handles the responses from data store and transforms them into easy-to-use way.
+   3. The Repository handles the responses from data store and transforms them into easy-to-use format.
 
    The keypoint is **the Repository acts as a gateway of data store**. When you want to make changes to data store, talk to Repository.
 
@@ -644,9 +655,7 @@ Hope you guys like it!
    #+begin_note
    Like creating a migration, when creating a schema, we generally define following things:
    1. table names
-   2. fields
-   3. associations (relationships)
-   4. default values
+   2. fields (name, type/relationship, default value)
    #+end_note
 
 *** creating a context first
@@ -668,9 +677,11 @@ Hope you guys like it!
 
 *** association related macros
     =Ecto.Schema= provides following macros for indicating the associations between schemas:
-    + one-to-one - =has_one= / =belongs_to=
-    + one-to-many - =has_many= / =belongs_to=
-    + many-to-many - =many_to_many= with =:join_through= option
+    | relationship | macros                                     |
+    |--------------+--------------------------------------------|
+    | one-to-one   | =has_one= / =belongs_to=                   |
+    | one-to-many  | =has_many= / =belongs_to=                  |
+    | many-to-many | =many_to_many= with =:join_through= option |
 
     It's hard to understand them without any example. Next, we will create necessary schemas step by step. When you have questions about them, please read respective documents like =h Ecto.Schema.many_to_many=.
 
@@ -887,7 +898,7 @@ Hope you guys like it!
    Next, we will introduce =Ecto.Changeset=.
 
 * =Ecto.Changeset=
-  =Ecto.Changeset= encapsulates the whole change policy, including allowed fields, detecting changes and validations.
+  =Ecto.Changeset= encapsulates the whole policy for changing data, including allowed fields, detecting changes and validations.
 
   In short, it defines the updating policies which make sure the database is changed safely.
 
@@ -898,32 +909,64 @@ Hope you guys like it!
 
 ** Basics
    General updating process is broke up into 3 stages:
-   1. casting and filtering raw data into changes
+   1. getting changes
    2. validating changes
    3. sending changes to database
 
    #+begin_src elixir
    raw_data
-   |> cast_and_filter
+   |> get_changes
    |> validate_changes
    |> send_changes_to_database
    #+end_src
 
    Next, we will talk about each step in detail.
 
-** Casting and Filtering
-   The first step is casting and filtering the raw data, and transform it as =%Changeset{}=. In Ecto:
-   + /casting/ means type conversion, like converting string to integer.
-   + /filtering/ means removing unused data.
+** Getting Changes
+   The first step is getting changes.
 
    Depending on where the data is coming from, this step can be done in two different ways.
+
+*** handling external data
+    #+begin_quote
+    External data is the data which is coming outside of your application code, such as:
+    + user forms
+    + API calls
+    + command line
+    + CSV file
+    + ...
+    #+end_quote
+
+    When working with changes provided external data, we should suppose that the data is dirty, then, *cast* and *filter* them into legal changes.
+
+    #+begin_quote
+    In Ecto:
+    + /casting/ means type conversion, like converting string to integer.
+    + /filtering/ means removing unused data.
+    #+end_quote
+
+    Handling external data can be done with =Ecto.Changeset.cast=. It casts and filters external data, then convert them into =:changes= field of =%Changeset{}=.
+
+    #+begin_src elixir
+    params = %{
+      "name" => "Vicious",
+      "bio" => "I have an evil name!",
+      "true_words" => "I want to be a good man."
+    }
+
+    changeset = cast(%Author{}, params, [:name, :bio])
+    #+end_src
+
+    Read more details at =h Ecto.Changeset.cast=.
 
 *** handling internal data
     #+begin_quote
     Internal data is the data which is coming from application code.
     #+end_quote
 
-    Handling internal data can be done with =Ecto.Changeset.change=.
+    Because this type of data comes from application code, it's unnecessary to waste time to cast and filter them.
+
+    Handling internal data can be done with =Ecto.Changeset.change=. It merges the internal data into =:changes= field of =%Changeset{}= directly, without casting and filtering.
 
     Create a new changeset from a new schema:
     #+begin_src elixir
@@ -951,34 +994,11 @@ Hope you guys like it!
 
     Read more details at =h Ecto.Changeset.change=.
 
-*** handling external data
-    #+begin_quote
-    External data is the data which is coming outside of your application code, such as:
-    + user forms
-    + API calls
-    + command line
-    + CSV file
-    + ...
-    #+end_quote
+*** last
+    After getting changes, we have a =%Changeset{}= which represents changes.
 
-    When working with external data, we should suppose that the data is dirty, then, *cast* and *filter* them.
-
-    Handling external data can be done with =Ecto.Changeset.cast=.
-
-    #+begin_src elixir
-    params = %{
-    "name" => "Vicious",
-    "bio" => "I have an evil name!",
-    "true_words" => "I want to be a good man."
-    }
-
-    changeset = cast(%Author{}, params, [:name, :bio])
-    #+end_src
-
-    Read more details at =h Ecto.Changeset.cast=.
-
-** Validating
-   After casting and filtering, we have a =%Changeset{}= which represents changes. Before sending it to database, we should also validate the changes.
+** Validating Changes
+   **When working with changes provided by external data**, we should also validate the changes before sending the to database.
 
    Ecto provides two kinds of utilities for validating. They perform similar functions, but differ in implementation:
    + validations
@@ -1081,6 +1101,7 @@ Hope you guys like it!
     2. execute all of constraints in order:
        1. if succeed to execute one constraint, execute another constraint.
        2. if failed to execute one constraint, the rest of constraints will not be executed any more.
+
 *** mixins
     Mixins are functions mix the features of validations and constraints. They have following features:
     + their execution rules are same as validations.
@@ -1102,6 +1123,7 @@ Hope you guys like it!
      |> validate_length(:name, min: 3)
      |> unique_constraint(:name)
      #+end_src
+
 *** rendering errors
     Ecto doesn't provide solutions for rendering =changeset.errors=. When you need to render them, consider using =Ecto.Changeset.traverse_errors=.
 
@@ -1201,7 +1223,7 @@ Hope you guys like it!
 
   It's time to put them together.
 
-  Edit =lib/paper/cms.ex=:
+  Open =lib/paper/cms.ex=, add general CRUD functions:
   #+begin_src elixir
   defmodule Paper.CMS do
     @doc """
@@ -1261,7 +1283,7 @@ Hope you guys like it!
    + keyword syntax
    + expression syntax
 
-   Following SQL will be wrote into above two types of syntax:
+   Following SQL can be wrote into above two types of syntax:
    #+begin_src sql
    SELECT a.name, a.bio FROM authors AS a
    #+end_src
@@ -1322,7 +1344,7 @@ Hope you guys like it!
     #+end_src
 
 ** Debugging
-   =Ecto.Adapters.SQL.to_sql/3= is used for translating a query to corresponding SQL statement. We can use these functions to help us inspect the details of queries.
+   =Ecto.Adapters.SQL.to_sql/3= is used for translating a query to corresponding SQL statement. We can use this function to help us inspecting the details of queries.
 
    For example:
    #+begin_src elixir
@@ -1341,10 +1363,10 @@ Hope you guys like it!
     In Ecto, =^= (pin operator) is used for marking values or expressions that need interpolation in an Ecto query.
 
     #+begin_note
-    =^= is named as caret in English.
+    =^= is named as "caret" in English.
     #+end_note
 
-    When =Ecto.Query= is converted into a SQL statement, values and expressions marked by ^ will become parameterized values.
+    When =Ecto.Query= is converted into a SQL statement, values and expressions marked by =^= will become parameterized values.
 
     #+begin_note
     Parameterized values provides protection against SQL-injection attacks.
@@ -1451,7 +1473,7 @@ Hope you guys like it!
    Read more details at =h Ecto.Query.group_by=.
 
 ** Joins
-   Joins are required when query acroess multiple tables at once.
+   Joins are required when query across multiple tables at once.
 
    Read more details at =h Ecto.Query.join=.
 
@@ -1466,10 +1488,10 @@ Hope you guys like it!
 
 ** Using a schema
    As you see, we are using table name string in above queries. But, with a schema, we can get better experiences, because it contains:
-   + the type info of fields, type conversion can be done automatically.
-   + the list of fields, =:select= option isn't necessary when querying.
+   + the type info of fields, therefore, type conversion can be done automatically.
+   + the list of fields, therefore, =:select= option isn't necessary when querying.
 
-   Give it an example. Without a schema=, we have to do type conversion and specify the =:select= manually:
+   Give it an example. Without a schema, we have to do type conversion and specify the =:select= manually:
    #+begin_src elixir
    author_id = "2"
    query = from "authors",
