@@ -1567,7 +1567,7 @@ Hope you guys like it!
   #+end_question
 
 ** What is association?
-   Ecto supports not only relational database, but also other types of data sources. Because of that, it's not suitable to describe the relationship between data sources by the terminology - /relationship/ which has been used in relational database.
+   Ecto not only supports relational database, but also other types of data sources. Because of that, it's not suitable to describe the relationship between data sources by the terminology - /relationship/ which has been used in relational database.
 
    Association is the term which is used by Ecto to describe the relationship between data sources. You can think it as a superset of /relationship/.
 
@@ -1608,6 +1608,7 @@ Hope you guys like it!
     |> Repo.insert!()
     #+end_src
 
+    #+begin_note
     We can also set =author_id= field directly.
 
     Use struct:
@@ -1628,11 +1629,38 @@ Hope you guys like it!
     |> put_change(:author_id, author.id)
     |> Repo.insert!()
     #+end_src
+    #+end_note
 
 *** update a child record
     Get a record, update it with =Ecto.Changeset=.
 
 *** handling children records as a whole
+**** handling external data
+     For handling external data, we will use =Ecto.Changeset.cast_assoc=.
+
+     =Ecto.Changeset.cast_assoc= works by comparing following data, and generate proper operations.
+     + current children records which are preloaded from database.
+     + parameters for given association which are retrieved from =changeset.params=.
+
+     It takes a changeset, the name of association, and the optional options:
+     #+begin_src elixir
+     params = %{
+       "posts" => [
+         %{"title" => "Hello World", "body" => "..."},
+         %{"title" => "Hello World", "body" => "..."}
+       ]
+     }
+
+     Repo.get_by(Author, name: "Spike")
+     |> Repo.preload(:posts)
+     |> change()
+     |> cast(params, [])
+     |> cast_assoc(:posts)
+     |> Repo.update!()
+     #+end_src
+
+     Read more details at =h Ecto.Changeset.cast_assoc=.
+
 **** handling internal data
      For handling internal data, we will use =Ecto.Changeset.put_assoc=.
 
@@ -1662,32 +1690,6 @@ Hope you guys like it!
      #+end_src
 
      Read more details at =h Ecto.Changeset.put_assoc=.
-
-**** handling external data
-     For handling external data, we will use =Ecto.Changeset.cast_assoc=.
-
-     =Ecto.Changeset.cast_assoc= works by comparing following data, and generate proper operations.
-     + current children records which are preloaded from database.
-     + parameters for given association which are retrieved from =changeset.params=.
-
-     It takes a changeset, the name of association, and the optional options:
-     #+begin_src elixir
-     params = %{
-       "posts" => [
-         %{"title" => "Hello World", "body" => "..."},
-         %{"title" => "Hello World", "body" => "..."}
-       ]
-     }
-
-     Repo.get_by(Author, name: "Spike")
-     |> Repo.preload(:posts)
-     |> change()
-     |> cast(params, [])
-     |> cast_assoc(:posts)
-     |> Repo.update!()
-     #+end_src
-
-     Read more details at =h Ecto.Changeset.cast_assoc=.
 
 **** handling records which are replaced
      When handling children records as a whole, we should consider a question: *Which action should be applied on children records which are replaced?*
