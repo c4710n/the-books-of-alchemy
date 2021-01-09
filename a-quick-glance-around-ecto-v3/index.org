@@ -2088,6 +2088,124 @@ Hope you guys like it!
     end
     #+end_src
 
+** About using UUID as id globally
+   #+begin_quote
+   When using auto-incrementing number as primary keys, it introduces some problems:
+   1. SCALING PROBLEM: At any given moment only one database server can generate the primary key. That means all writes have to go through a single server. That's bad news if you want to do thousands of writes per second.
+   2. SECURITY PROBLEM: Bots and bad actors can guess private URLs.
+
+   How using UUIDs as primary keys solve the problems?
+   1. SOLVE SCALING PROBLEM: All writes no longer have to go through a single database. You can spread them out across many servers. In addition they give you the flexibility to do things like generate the id of a record before its saved to the database. This might be useful if you want to send the record to a cache or search server, but don't want to wait for the database transaction to complete.
+   2. SECURITY PROBLEM: UUID is random in personal view. It is hard to guess.
+
+   -- Summarized from [[https://web.archive.org/web/20210109133524/https://www.honeybadger.io/blog/easy-rails-database-scaling-wins/][Simple tips to make scaling your database easier as you grow]]
+   #+end_quote
+
+   Setup migrations:
+   #+begin_src elixir
+   config :paper, Paper.Repo, migration_primary_key: [name: :id, type: :binary_id]
+   #+end_src
+
+   Setup schemas:
+   #+begin_src elixir
+   # Define a module to be used as base
+   defmodule Paper.CMS.Schema do
+     defmacro __using__(_) do
+       quote do
+         use Ecto.Schema
+         @primary_key {:id, :binary_id, autogenerate: true}
+         @foreign_key_type :binary_id
+       end
+     end
+   end
+
+   # Now use Paper.CMS.Schema to define new schemas
+   defmodule Paper.CMS.Comment do
+     use Paper.CMS.Schema
+
+     schema "comments" do
+       belongs_to :post, Paper.CMS.Post
+     end
+   end
+   #+end_src
+
+   Then, just write any other things like before.
+
+   References:
+   + [[https://web.archive.org/web/20210109134825/https://www.annkissam.com/elixir/alembic/posts/2019/01/04/ecto-and-binary-ids.html][Ecto and Binary IDs]]
+
+** About using enum in Ecto
+   References:
+   + [[https://web.archive.org/web/20210109014356/https://dennisbeatty.com/use-the-new-enum-type-in-ecto-3-5.html][Use the new Enum type in Ecto 3.5]]
+
+*** method 1 - use builtin feature
+    Ecto 3.5 was released in October 2020, and it included the new =Ecto.Enum= module.
+    A migration:
+    #+begin_src elixir
+    defmodule MyApp.Repo.Migrations.AddRoleToUsers do
+      use Ecto.Migration
+
+      def up do
+        execute("CREATE TYPE user_role AS ENUM ('admin', 'moderator', 'seller', 'buyer')")
+
+        alter table(:users) do
+          add :role, :user_role
+        end
+      end
+
+      def down do
+        alter table(:users) do
+          remove :role, :user_role
+        end
+
+        execute("DROP TYPE user_role")
+      end
+    end
+    #+end_src
+
+    A schema:
+    #+begin_src elixir
+    defmodule MyApp.Accounts.User do
+      use Ecto.Schema
+
+      schema "users" do
+        field :role, Ecto.Enum, values: [:admin, :moderator, :seller, :buyer]
+      end
+    end
+    #+end_src
+
+*** method 2 - use [[https://github.com/gjaldon/ecto_enum][EctoEnum]]
+    #+begin_src elixir
+    # lib/my_app/accounts/user_role.ex
+    defmodule MyApp.Accounts.UserRole do
+      use EctoEnum, type: :user_role, enums: [:admin, :moderator, :seller, :buyer]
+    end
+
+    # lib/my_app/accounts/user.ex
+    defmodule MyApp.Accounts.User do
+      use Ecto.Schema
+      alias MyApp.Accounts.UserRole
+
+      schema "users" do
+        field :role, UserRole
+      end
+    end
+
+    # priv/repo/migrations/20210102193646_add_role_to_users.exs
+    defmodule MyApp.Repo.Migrations.AddRoleToUsers do
+      use Ecto.Migration
+      alias MyApp.Accounts.UserRole
+
+      def change do
+        UserRole.create_type()
+
+        alter table(:users) do
+          add :role, :user_role
+        end
+      end
+    end
+    #+end_src
+
 ** Setting default value for fields?
 *** set default value in database level
     Set default value for columns by using =:default= option of =add= macro in =Ecto.Migration=.
