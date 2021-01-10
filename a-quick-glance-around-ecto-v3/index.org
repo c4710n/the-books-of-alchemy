@@ -1800,10 +1800,14 @@ Hope you guys like it!
 
     When the relationship between parent and child is =has_*=, and =:nothing= policy of =:on_delete= option is used, Ecto will raise an constraint error when checking constraint. If the error is valuable for users, you can catch this error by =Ecto.Changeset.no_assoc_constraint= which convert error to human-readable message. Read =h Ecto.Changeset.no_assoc_constraint= for more details.
 
-** Note for =cast_assoc= / =put_assoc= / =build_assoc=
+** Note for =cast= / =cast_assoc= / =put_assoc= / =build_assoc=
    + =cast_assoc= is used for casting external data, it will result in multiple =INSERT= / =UPDATE= / =DELETE= queries.
    + =put_assoc= is used for defining associations between existing records.
    + =build_assoc= is used for building a record associated with another record.
+
+   [[file:./assets/73d21fd0fd4e3fd9989c9bd280b6a3ec.png]]
+
+   Pic from [[https://web.archive.org/web/20210110052704/https://blog.appsignal.com/2020/11/10/understanding-associations-in-elixir-ecto.html][Understanding Associations in Elixir's Ecto]]
 
 * Seeding
   Seeding is a mechanism to populate tables with relevant data programatically.
