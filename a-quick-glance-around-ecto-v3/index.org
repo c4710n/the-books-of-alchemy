@@ -2044,6 +2044,7 @@ Hope you guys like it!
       defmacro __using__(_) do
         quote do
           use Ecto.Schema
+
           @timestamps_opts [type: :utc_datetime_usec]
         end
       end
@@ -2109,7 +2110,7 @@ Hope you guys like it!
    Setup schemas:
    #+begin_src elixir
    # Define a module to be used as base
-   defmodule Paper.CMS.Schema do
+   defmodule Paper.Schema do
      defmacro __using__(_) do
        quote do
          use Ecto.Schema
@@ -2121,7 +2122,7 @@ Hope you guys like it!
 
    # Now use Paper.CMS.Schema to define new schemas
    defmodule Paper.CMS.Comment do
-     use Paper.CMS.Schema
+     use Paper.Schema
 
      schema "comments" do
        belongs_to :post, Paper.CMS.Post
