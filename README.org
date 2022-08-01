@@ -4,4 +4,4 @@
 The books about Elixir and OTP.
 #+end_quote
 
-+ [[https://next.cato-cato.com/the-books-of-alchemy/a-quick-glance-around-ecto-v3/index.html][A Quick Glance Around Ecto v3]]
++ [[https://pages.rising.land/the-books-of-alchemy/a-quick-glance-around-ecto-v3/index.html][A Quick Glance Around Ecto v3]]
